@@ -131,7 +131,7 @@ type
     );
 
     //enum ELEMENT_MODEL
-    ELEMENT_MODEL = (
+    HTMLayoutElementModel = (
         DATA_ELEMENT            = 0, // data element, invisible by default - display:none.
         INLINE_TEXT_ELEMENT     = 1, // inline text, can contain text, example: <em>. Will get style display:inline.
         INLINE_BLOCK_ELEMENT    = 2, // inline element, contains blocks inside, example: <select>. Will get style display:inline-block.
@@ -140,7 +140,7 @@ type
     );
 
     //enum HTMLAYOUT_OPTIONS
-    HTMLAYOUT_OPTIONS = (
+    HTMLayoutOptions = (
         HTMLAYOUT_SMOOTH_SCROLL         = 1, // value:TRUE - enable, value:FALSE - disable, enabled by default
         HTMLAYOUT_CONNECTION_TIMEOUT    = 2, // value: milliseconds, connection timeout of http client
         HTMLAYOUT_HTTPS_ERROR           = 3, // value: 0 - drop connection, 1 - use builtin dialog, 2 - accept connection silently
@@ -155,20 +155,20 @@ type
 // htmlayout.h
 function  HTMLayoutClassNameA() : LPCSTR; stdcall;
 function  HTMLayoutClassNameW() : LPCWSTR; stdcall;
-function  HTMLayoutDataReady( hwnd : HWND; uri : LPCWSTR; data : Pointer; length: DWORD): BOOL; stdcall;
-function  HTMLayoutDataReadyAsync( hwnd : HWND; uri : LPCWSTR; data : PBYTE; dataLength : DWORD; dataType : UINT ) : BOOL; stdcall;
+function  HTMLayoutDataReady( hwnd : HWND; uri : LPCWSTR; data : PBYTE; length: DWORD): BOOL; stdcall;
+function  HTMLayoutDataReadyAsync( hwnd : HWND; uri : LPCWSTR; data : PBYTE; dataLength : DWORD; dataType : UINT {HTMLayoutResourceType} ) : BOOL; stdcall;
 function  HTMLayoutProc( hwnd : HWND; msg : UINT; wParam : WPARAM; lParam : LPARAM ): LRESULT; stdcall;
 function  HTMLayoutProcW( hwnd : HWND; msg : UINT; wParam : WPARAM; lParam : LPARAM ): LRESULT; stdcall;
 function  HTMLayoutProcND( hwnd : HWND; msg: UINT; wParam : WPARAM; lParam : LPARAM; var pbHandled: BOOL): LRESULT; stdcall;
 function  HTMLayoutGetMinWidth( hwnd : HWND ) : UINT; stdcall;
 function  HTMLayoutGetMinHeight( hwnd : HWND; width : UINT ) : UINT; stdcall;
 function  HTMLayoutLoadFile( hwnd : HWND; filename : LPCWSTR) : BOOL; stdcall;
-function  HTMLayoutLoadHtml( hwnd : HWND; html : PBYTE; htmlSize: UINT): BOOL; stdcall;
-function  HTMLayoutLoadHtmlEx( hwnd : HWND; html : PBYTE; htmlSize : UINT; baseUrl : LPCWSTR) : BOOL; stdcall;
-procedure HTMLayoutSetMode( hwnd : HWND; HTMLayoutMode : HTMLayoutModes); stdcall;
+function  HTMLayoutLoadHtml( hwnd : HWND; html : LPCBYTE; htmlSize: UINT): BOOL; stdcall;
+function  HTMLayoutLoadHtmlEx( hwnd : HWND; html : LPCBYTE; htmlSize : UINT; baseUrl : LPCWSTR) : BOOL; stdcall;
+procedure HTMLayoutSetMode( hwnd : HWND; HTMLayoutMode : integer {HTMLayoutModes} ); stdcall;
 procedure HTMLayoutSetCallback(hwnd: HWND; cb: HTMLayoutNotify; cbParam: Pointer); stdcall;
 function  HTMLayoutSelectionExist( hwnd : HWND ) : BOOL; stdcall;
-function  HTMLayoutGetSelectedHTML( hwnd : HWND; var pSize : UINT ) : PBYTE; stdcall;
+function  HTMLayoutGetSelectedHTML( hwnd : HWND; var pSize : UINT ) : LPCBYTE; stdcall;
 function  HTMLayoutClipboardCopy( hwnd : HWND ) : BOOL; stdcall;
 function  HTMLayoutEnumResources( hwnd : HWND; cb : HTMLAYOUT_CALLBACK_RES ) : UINT; stdcall;
 function  HTMLayoutEnumResourcesEx( hwnd : HWND; cb : HTMLAYOUT_CALLBACK_RES_EX; cbPrm : Pointer ) : UINT; stdcall;
@@ -176,7 +176,7 @@ function  HTMLayoutSetMasterCSS( utf8 : LPCBYTE; numBytes : UINT ) : BOOL; stdca
 function  HTMLayoutAppendMasterCSS( utf8 : LPCBYTE; numBytes : UINT ) : BOOL; stdcall;
 function  HTMLayoutSetDataLoader( pDataLoader : HTMLAYOUT_DATA_LOADER ) : BOOL; stdcall;
 function  HTMLayoutDeclareElementType( name : LPCSTR; elementModel : UINT {ELEMENT_MODEL} ) : BOOL; stdcall;
-function  HTMLayoutSetCSS( hwnd : HWND; utf8 : PBYTE; numBytes : UINT; baseUrl : LPCWSTR; mediaType : LPCWSTR ) : BOOL; stdcall;
+function  HTMLayoutSetCSS( hwnd : HWND; utf8 : LPCBYTE; numBytes : UINT; baseUrl : LPCWSTR; mediaType : LPCWSTR ) : BOOL; stdcall;
 function  HTMLayoutSetMediaType( hwnd : HWND; mediaType : LPCWSTR ) : BOOL; stdcall;
 function  HTMLayoutSetMediaVars(  hwnd : HWND; const mediaVars : PHtmlVALUE ) : BOOL; stdcall;
 function  HTMLayoutSetHttpHeaders( hwnd : HWND; httpHeaders : LPCSTR; httpHeadersLength : UINT ) : BOOL; stdcall;
@@ -195,7 +195,7 @@ uses HtmlDll;
 
 function  HTMLayoutClassNameA() : LPCSTR; external HTMLayoutDLL; stdcall;
 function  HTMLayoutClassNameW() : LPCWSTR; external HTMLayoutDLL; stdcall;
-function  HTMLayoutDataReady( hwnd : HWND; uri : LPCWSTR; data : Pointer; length : DWORD) : BOOL; external HTMLayoutDLL; stdcall;
+function  HTMLayoutDataReady( hwnd : HWND; uri : LPCWSTR; data : PBYTE; length : DWORD) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutDataReadyAsync( hwnd : HWND; uri : LPCWSTR; data : PBYTE; dataLength : DWORD; dataType : UINT ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutProc( hwnd : HWND; msg : UINT; wParam : WPARAM; lParam : LPARAM ): LRESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutProcW( hwnd : HWND; msg : UINT; wParam : WPARAM; lParam : LPARAM ): LRESULT; external HTMLayoutDLL; stdcall;
@@ -203,12 +203,12 @@ function  HTMLayoutProcND(  hwnd : HWND; msg : UINT; wParam : WPARAM; lParam : L
 function  HTMLayoutGetMinWidth( hwnd : HWND ) : UINT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutGetMinHeight( hwnd : HWND; width : UINT ) : UINT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutLoadFile( hwnd : HWND; filename : LPCWSTR): BOOL;  external HTMLayoutDLL; stdcall;
-function  HTMLayoutLoadHtml( hwnd : HWND; html : PBYTE; htmlSize : UINT): BOOL; external HTMLayoutDLL; stdcall;
-function  HTMLayoutLoadHtmlEx( hwnd : HWND; html : PBYTE; htmlSize : UINT; baseUrl : LPCWSTR ) : BOOL; external HTMLayoutDLL; stdcall;
-procedure HTMLayoutSetMode( hwnd : HWND; HTMLayoutMode : HTMLayoutModes ); external HTMLayoutDLL; stdcall;
+function  HTMLayoutLoadHtml( hwnd : HWND; html : LPCBYTE; htmlSize : UINT): BOOL; external HTMLayoutDLL; stdcall;
+function  HTMLayoutLoadHtmlEx( hwnd : HWND; html : LPCBYTE; htmlSize : UINT; baseUrl : LPCWSTR ) : BOOL; external HTMLayoutDLL; stdcall;
+procedure HTMLayoutSetMode( hwnd : HWND; HTMLayoutMode : integer {HTMLayoutModes} ); external HTMLayoutDLL; stdcall;
 procedure HTMLayoutSetCallback( hwnd : HWND; cb : HTMLayoutNotify; cbParam : Pointer ); external HTMLayoutDLL; stdcall;
 function  HTMLayoutSelectionExist( hwnd : HWND ) : BOOL; external HTMLayoutDLL; stdcall;
-function  HTMLayoutGetSelectedHTML( hwnd : HWND; var pSize : UINT ) : PBYTE; external HTMLayoutDLL; stdcall;
+function  HTMLayoutGetSelectedHTML( hwnd : HWND; var pSize : UINT ) : LPCBYTE; external HTMLayoutDLL; stdcall;
 function  HTMLayoutClipboardCopy( hwnd : HWND ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutEnumResources( hwnd : HWND; cb : HTMLAYOUT_CALLBACK_RES ) : UINT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutEnumResourcesEx( hwnd : HWND; cb : HTMLAYOUT_CALLBACK_RES_EX; cbPrm : Pointer ) : UINT; external HTMLayoutDLL; stdcall;
@@ -216,7 +216,7 @@ function  HTMLayoutSetMasterCSS( utf8 : LPCBYTE; numBytes : UINT) : BOOL; extern
 function  HTMLayoutAppendMasterCSS( utf8 : LPCBYTE; numBytes : UINT ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetDataLoader( pDataLoader : HTMLAYOUT_DATA_LOADER ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutDeclareElementType( name : LPCSTR; elementModel : UINT {ELEMENT_MODEL} ) : BOOL; external HTMLayoutDLL; stdcall;
-function  HTMLayoutSetCSS( hwnd : HWND; utf8 : PBYTE; numBytes : UINT; baseUrl : LPCWSTR; mediaType : LPCWSTR ) : BOOL; external HTMLayoutDLL; stdcall;
+function  HTMLayoutSetCSS( hwnd : HWND; utf8 : LPCBYTE; numBytes : UINT; baseUrl : LPCWSTR; mediaType : LPCWSTR ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetMediaType( hwnd : HWND; mediaType : LPCWSTR ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetMediaVars(  hwnd : HWND; const mediaVars : PHtmlVALUE ) : BOOL; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetHttpHeaders( hwnd : HWND; httpHeaders : LPCSTR; httpHeadersLength : UINT ) : BOOL; external HTMLayoutDLL; stdcall;
