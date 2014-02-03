@@ -171,7 +171,7 @@ published
 
 implementation
 
-uses HtmlTest; // just for testing
+// uses HtmlTest; // Just for testing
 
 {----------------------------- THtmlControl -----------------------------------}
 
