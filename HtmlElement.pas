@@ -1815,7 +1815,7 @@ begin
     assert( is_valid() );
     Result := inURL;
     SetLength( Result, 2048 );
-    FlastError := HTMLayoutCombineURL( Fhandler, @Result[1], Length( Result ) );
+    FlastError := HTMLayoutCombineURL( Fhandler, LPWSTR( Result ), Length( Result ) );
     assert( FlastError = HLDOM_OK );
 end;
 
@@ -1825,7 +1825,12 @@ end;
 procedure THtmlHElement.set_html( const html : string; where : HTMLayoutSetHTMLWhere = SIH_REPLACE_CONTENT );
 begin
     assert( is_valid() );
-    FlastError := HTMLayoutSetElementHtml( Fhandler, PBYTE( @html[1] ), Length( html ), UINT( where ) );
+    if (  Length( html ) = 0 ) then
+    begin
+        html := ' ';
+    end;
+
+    FlastError := HTMLayoutSetElementHtml( Fhandler, PBYTE( html ), Length( html ), UINT( where ) );
     assert( FlastError = HLDOM_OK );
 end;
 

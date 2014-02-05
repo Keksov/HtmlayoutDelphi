@@ -3,7 +3,8 @@ Terms of use
 ============
 
 HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
-Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
+Delphi binding of HTMLayout published under LGPL.
+Visit https://github.com/Keksov/HtmlayoutDelphi
   
 Delphi binding for HTMLayout
 ============================
@@ -13,7 +14,8 @@ Created with HTMLayout SDK v 3.3.3.13
 All functions from layout.h and layout_dom.h are imported. Several DOM object wrappers introduced.
 Download SDK from official site http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 For getting help on HTMLayout itself please visit forum at http://www.terrainformatica.com/forum/list.php?3 
-If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help.
+If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help, especially this topic 
+http://www.rsdn.ru/forum/htmlayout/2231219.flat#2231219
 
 I'll not answer general questions on HTMLayout usage, but feel free to contact me concerning Delphi code.
 
