@@ -127,7 +127,7 @@ public
     procedure   select( aCallback : HTMLayoutElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 );
 
     procedure   update( const render_now : boolean = false ); overload;
-    // aMode - bitwise combination of HTMLUpdateElementFlags
+    // aMode - bitwise combination of UPDATE_ELEMENT_FLAGS
     procedure   update( const aMode : integer ); overload;
     procedure   redraw();
     function    get_location( const aArea : HTMLAYOUT_ELEMENT_AREAS = ROOT_RELATIVE ) : TRect;
@@ -138,6 +138,7 @@ public
     function    get_element_uid() : UINT;
     function    combine_url( const inURL : widestring ) : widestring;
     procedure   set_html( const html : string; where : HTMLayoutSetHTMLWhere = SIH_REPLACE_CONTENT );
+    procedure   clear();
     function    get_state( const bits : cardinal ) : boolean;
     procedure   set_state( const bitsToSet : cardinal; const bitsToClear : cardinal = 0; update : boolean = true );
     function    enabled() : boolean;
@@ -1514,7 +1515,7 @@ end;
 *******************************************************************************}
 procedure THtmlHElement.redraw();
 begin
-    update( false );
+    update( RESET_STYLE_DEEP or MEASURE_DEEP or REDRAW_NOW );
 end;
 
 {*******************************************************************************
@@ -1815,7 +1816,7 @@ begin
     assert( is_valid() );
     Result := inURL;
     SetLength( Result, 2048 );
-    FlastError := HTMLayoutCombineURL( Fhandler, @Result[1], Length( Result ) );
+    FlastError := HTMLayoutCombineURL( Fhandler, LPWSTR( Result ), Length( Result ) );
     assert( FlastError = HLDOM_OK );
 end;
 
@@ -1823,10 +1824,25 @@ end;
 * set_html
 *******************************************************************************}
 procedure THtmlHElement.set_html( const html : string; where : HTMLayoutSetHTMLWhere = SIH_REPLACE_CONTENT );
+var
+    s : string;
+
 begin
     assert( is_valid() );
-    FlastError := HTMLayoutSetElementHtml( Fhandler, PBYTE( @html[1] ), Length( html ), UINT( where ) );
+    if (  Length( html ) <> 0 ) then
+        FlastError := HTMLayoutSetElementHtml( Fhandler, PBYTE( html ), Length( html ), UINT( where ) )
+    else
+        clear();
+
     assert( FlastError = HLDOM_OK );
+end;
+
+{*******************************************************************************
+* clear
+*******************************************************************************}
+procedure THtmlHElement.clear();
+begin
+    innerText16 := '';
 end;
 
 {*******************************************************************************

@@ -227,10 +227,10 @@ function  HTMLayoutGetElementIndex( he : HELEMENT; var p_index : UINT ) : HLDOM_
 function  HTMLayoutGetElementType( he : HELEMENT; var p_type : LPCSTR ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutGetStyleAttribute( he : HELEMENT; name : LPCSTR; var p_value : LPCWSTR ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutSetStyleAttribute( he : HELEMENT; name : LPCSTR; value : LPCWSTR ) : HLDOM_RESULT; stdcall;
-function  HTMLayoutGetElementLocation( he : HELEMENT; var p_location : TRect; areas : UINT {HTMLayoutElementAreas} ) : HLDOM_RESULT; stdcall;
-function  HTMLayoutScrollToView( he : HELEMENT; flags : UINT {HTMLayoutScrollFlags} ) : HLDOM_RESULT; stdcall;
+function  HTMLayoutGetElementLocation( he : HELEMENT; var p_location : TRect; areas : UINT {HTMLAYOUT_ELEMENT_AREAS} ) : HLDOM_RESULT; stdcall;
+function  HTMLayoutScrollToView( he : HELEMENT; flags : UINT {HTMLAYOUT_SCROLL_FLAGS} ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutUpdateElement( he : HELEMENT; renderNow : BOOL ) : HLDOM_RESULT; stdcall;
-function  HTMLayoutUpdateElementEx( he : HELEMENT; flags : UINT ) : HLDOM_RESULT; stdcall;
+function  HTMLayoutUpdateElementEx( he : HELEMENT; flags : UINT {UPDATE_ELEMENT_FLAGS} ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutSetCapture( he : HELEMENT ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutSetEventRoot( he : HELEMENT; var phePrevRoot : HELEMENT ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutGetElementHwnd( he : HELEMENT; var p_hwnd : HWND; rootWindow : BOOL ) : HLDOM_RESULT; stdcall;
@@ -319,10 +319,10 @@ function  HTMLayoutGetElementIndex( he : HELEMENT; var p_index : UINT ) : HLDOM_
 function  HTMLayoutGetElementType( he : HELEMENT; var p_type : LPCSTR ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutGetStyleAttribute( he : HELEMENT; name : LPCSTR; var p_value : LPCWSTR ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetStyleAttribute( he : HELEMENT; name : LPCSTR; value : LPCWSTR ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
-function  HTMLayoutGetElementLocation(he : HELEMENT; var p_location : TRect; areas : UINT {ROOT_RELATIVE|CONTENT_BOX} ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
-function  HTMLayoutScrollToView(he : HELEMENT; flags : UINT {HTMLayoutScrollFlags} ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
+function  HTMLayoutGetElementLocation(he : HELEMENT; var p_location : TRect; areas : UINT {HTMLAYOUT_ELEMENT_AREAS} ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
+function  HTMLayoutScrollToView(he : HELEMENT; flags : UINT {HTMLAYOUT_SCROLL_FLAGS} ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutUpdateElement( he : HELEMENT; renderNow : BOOL ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
-function  HTMLayoutUpdateElementEx( he : HELEMENT; flags : UINT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
+function  HTMLayoutUpdateElementEx( he : HELEMENT; flags : UINT {UPDATE_ELEMENT_FLAGS} ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetCapture( he : HELEMENT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutSetEventRoot( he : HELEMENT; var phePrevRoot : HELEMENT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutGetElementHwnd( he : HELEMENT; var p_hwnd : HWND; rootWindow : BOOL ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
