@@ -2,8 +2,9 @@ unit HtmlTypes;
 
 (*
   HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
-  Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
-  HTMLayout SDK http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+  SDK - http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+
+  Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
 *)
 
 interface

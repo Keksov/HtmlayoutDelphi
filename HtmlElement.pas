@@ -2,15 +2,18 @@ unit HtmlElement;
 
 (*
   HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
-  Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
-  HTMLayout SDK http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+  SDK - http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+
+  Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
+
+  This file contains classes for manipulating DOM and handling events.
 *)
 
 interface
 
 uses Windows, sysutils, Contnrs
     , HtmlTypes
-    , HtmlBehaviour
+    , HtmlBehaviorH
     , HtmlLayoutH
     , HtmlLayoutDomH
     , HtmlValueH        
@@ -191,25 +194,12 @@ public // property
     property innerText16 : widestring read getInnerText16 write setInnerText16;
     property location : TRect read getLocation;
 
-{    function   FindFirst(sel: PWideChar): HtmlElement;
-
-    procedure  Insert(e: HtmlElement; index: UINT);
-
-    function   GetHtml(): AnsiString;
-    procedure  SetHtml(html: WideString; where: UINT);
-
-    procedure  SetBehaviorHandler(cb: IHtmlBehaviorListener);
-    procedure  RemoveBehaviorHandler(cb: IHtmlBehaviorListener);
-}
-
     end;
 
 {------------------------------- THtmlElement ---------------------------------}
 
     THtmlElement = class;
     CHtmlElement = class of THtmlElement;
-
-//    TElementSelectorHandler = function( he : HELEMENT; const aHtmlElement : THtmlElement; aParams : POINTER ) : boolean;
 
     HTMLElementProcEventHandler   = function( aElement : THtmlElement; aEventGroup : UINT; aEventParams : Pointer; aTag : Pointer ) : boolean;
     HTMLElementMethodEventHandler = function( aElement : THtmlElement; aEventGroup : UINT; aEventParams : Pointer; aTag : Pointer ) : boolean of object;

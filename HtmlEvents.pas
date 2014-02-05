@@ -1,10 +1,19 @@
 unit HtmlEvents;
 
+(*
+  HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
+  SDK - http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+
+  Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
+
+  This file contains misc helpers for handling HTMLayout events
+*)
+
 interface
 
 uses Windows
     , HtmlTypes
-    , HtmlBehaviour
+    , HtmlBehaviorH
     , HtmlElement
 ;
 

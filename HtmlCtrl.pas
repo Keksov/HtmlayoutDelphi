@@ -1,12 +1,12 @@
 unit HtmlCtrl;
 
 (*
-  This file contains object wrapper for function from include\htmlayout.h of
-  HTMLayout SDK http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
-
   HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
-  Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
+  SDK - http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 
+  Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
+
+  This file contains object wrapper for function from include\htmlayout.h of
   Most accurate documentation could be found in include\htmlayout.h itself
 *)
 
@@ -171,7 +171,7 @@ published
 
 implementation
 
-// uses HtmlTest; // Just for testing
+uses HtmlTest; // Just for testing
 
 {----------------------------- THtmlControl -----------------------------------}
 

@@ -6,7 +6,7 @@ uses classes, sysutils, forms, Controls, types, windows
     , HtmlCtrl
     , HtmlElement
     , HtmlTypes
-    , HtmlBehaviour
+    , HtmlBehaviorH
 ;
 
 implementation

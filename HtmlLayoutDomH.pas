@@ -1,12 +1,12 @@
 unit HtmlLayoutDomH;
 
 (*
-  This file contains function declarations translated from include\htmlayout_dom.h of
   HTMLayout SDK http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 
   HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
   Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
 
+  This file contains function and types declarations translated from include\htmlayout_dom.h of
   Most accurate documentation could be found in include\htmlayout_dom.h itself
 *)
 
@@ -14,7 +14,7 @@ interface
 
 uses Windows
     , HtmlTypes
-    , HtmlBehaviour
+    , HtmlBehaviorH
     , HtmlValueH
     , HtmlLayoutH
 ;

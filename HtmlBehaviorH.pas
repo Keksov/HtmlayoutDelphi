@@ -1,12 +1,20 @@
-unit HtmlBehaviour;
+unit HtmlBehaviorH;
+
+(*
+  HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
+  SDK - http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+
+  Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
+  
+  This file contains function and types declarations translated from include\htmlayout_behavior.h
+  Most accurate documentation could be found in include\htmlayout_behavior.h itself
+*)
 
 interface
 
 uses Windows
     , HtmlTypes
 ;
-
-// HTMLayout API documentation http://www.terrainformatica.com/htmlayout/doxydoc/index.html
 
 const
     // enum EVENT_GROUPS

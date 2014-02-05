@@ -7,7 +7,7 @@ uses classes, sysutils, forms, Controls, types, windows
     , HtmlElement
     , HtmlTypes
     , HtmlLayoutDomH
-    , HtmlBehaviour
+    , HtmlBehaviorH
     , HtmlTestEvents0
     , HtmlTestEvents1
     , HtmlTestEvents2

@@ -1,12 +1,12 @@
 unit HtmlValueH;
 
 (*
-  This file contains function declarations translated from include\value.h of
-  HTMLayout SDK http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
-
   HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
-  Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
+  SDK - http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 
+  Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
+
+  This file contains object wrapper for function from include\value.h of
   Most accurate documentation could be found in include\value.h itself
 *)
 
@@ -15,7 +15,6 @@ interface
 uses Windows, sysutils
     , HtmlDll
 ;
-
 
 type
 
