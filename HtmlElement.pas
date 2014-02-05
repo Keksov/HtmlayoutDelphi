@@ -39,6 +39,7 @@ private
     Funused                     : boolean;
 
 private
+    procedure   setHandler( const aHandler : HELEMENT );
     function    getParentInfo() : RParentInfo;
     function    getId() : widestring;
     procedure   setId( const aId : widestring );
@@ -168,7 +169,7 @@ public // property
     property states : cardinal read getStates write setStates;
     property state[ const aState : cardinal ] : boolean read getState write setState;
     property lastError : HLDOM_RESULT read FlastError;
-    property handler : HELEMENT read Fhandler;
+    property handler : HELEMENT read Fhandler write setHandler;
     property root : HELEMENT read getRootHandler;
     property parent : HELEMENT read getParentHandler;
     property child[ const aIndex : integer ] : HELEMENT read getChild;
@@ -1622,6 +1623,16 @@ begin
 end;
 
 {*******************************************************************************
+* setHandler
+*******************************************************************************}
+procedure THtmlHElement.setHandler( const aHandler : HELEMENT );
+begin
+    internalUnuse();
+    Fhandler := aHandler;
+    internalUse();
+end;
+
+{*******************************************************************************
 * getParentInfo
 *******************************************************************************}
 function THtmlHElement.getParentInfo() : RParentInfo;
@@ -2619,10 +2630,7 @@ class function THtmlShim.get( const aHandler : HELEMENT ) : THtmlShim;
 begin
     assert( GlobalShim <> nil );
 
-    GlobalShim.internalUnuse();
-    GlobalShim.Fhandler := aHandler;
-    GlobalShim.internalUse();
-
+    GlobalShim.handler := aHandler;
     Result := GlobalShim;
 end;
 
@@ -2903,7 +2911,7 @@ INITIALIZATION
     GlobalShim := THtmlShim.Create();
 
 FINALIZATION
-    FreeAndNil( GlobalShim );
+    GlobalShim.unuse();
 
 end.
 

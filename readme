@@ -1,7 +1,21 @@
 
- Delphi binding for HTMLayout
- ============================
- 
- Simple wrappers made for demonstration of piece of HTMLayout to antiquated Delphi developers.
+Terms of use
+============
 
- Implemented a tiny piece of DOM-manipulation methods and behavior event handling.
+HTMLayout License terms could be found here http://www.terrainformatica.com/htmlayout/prices.whtm
+Delphi binding of HTMLayout is free for commercial and non-commercial use, visit https://github.com/Keksov/HtmlayoutDelphi
+  
+Delphi binding for HTMLayout
+============================
+ 
+Created with HTMLayout SDK v 3.3.3.13
+
+All functions from layout.h and layout_dom.h are imported. Several DOM object wrappers introduced.
+Download SDK from official site http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
+For getting help on HTMLayout itself please visit forum at http://www.terrainformatica.com/forum/list.php?3 
+If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help.
+
+I'll not answer general questions on HTMLayout usage, but feel free to contact me concerning Delphi code.
+
+Usage
+=====
