@@ -1824,9 +1824,6 @@ end;
 * set_html
 *******************************************************************************}
 procedure THtmlHElement.set_html( const html : string; where : HTMLayoutSetHTMLWhere = SIH_REPLACE_CONTENT );
-var
-    s : string;
-
 begin
     assert( is_valid() );
     if (  Length( html ) <> 0 ) then
