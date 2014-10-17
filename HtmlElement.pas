@@ -11,18 +11,28 @@ unit HtmlElement;
 
 interface
 
-uses Windows, sysutils, Contnrs
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
+uses Windows, sysutils, Contnrs, graphics
     , HtmlTypes
     , HtmlBehaviorH
     , HtmlLayoutH
     , HtmlLayoutDomH
-    , HtmlValueH        
+    , HtmlValueH
+    , unisSVG
+    , toolsString
 ;
 
 const
     INSERT_AT_END = $7FFFFFF;
 
 type
+    THtmlHElement = class;
+
+    // just a list of most friquently used attributes, fill free to extend it. see THtmlHElement CSS shorcuts below
+    HTML_STYLE_ATTRS = (
+        saWIDTH, saHEIGHT, saTOP, saLEFT, saBACKGROUND_COLOR, saCOLOR, saVISIBILITY
+    );
 
 {---------------------------- THtmlHElement -----------------------------------}
 
@@ -31,6 +41,14 @@ type
         parent                  : HELEMENT;
         children_count          : cardinal;
     end;
+
+    HTMLayoutHElementCallback = function( he : HELEMENT; sParams : POINTER ) : boolean of object;
+
+    RSelectHandler = record
+        callback                : HTMLayoutHElementCallback;
+        params                  : Pointer;
+    end;
+    PRSelectHandler = ^RSelectHandler;
 
     {***************************************************************************
     * THtmlHElement
@@ -44,16 +62,14 @@ private
 private
     procedure   setHandler( const aHandler : HELEMENT );
     function    getParentInfo() : RParentInfo;
+
+    procedure   setStyleAsInt( const aAttrIndex : integer; const aValue : integer );
+    function    getStyleAsInt( const aAttrIndex : integer ) : integer;
+    procedure   setStyleAsString( const aAttrIndex : integer; const aValue : string );
+    function    getStyleAsString( const aAttrIndex : integer ) : string;
+
     function    getId() : widestring;
     procedure   setId( const aId : widestring );
-    function    getWidth() : integer;
-    procedure   setWidth( const aPxValue : integer );
-    function    getHeight() : integer;
-    procedure   setHeight( const aPxValue : integer );
-    function    getTop() : integer;
-    procedure   setTop( const aPxValue : integer );
-    function    getLeft() : integer;
-    procedure   setLeft( const aPxValue : integer );
 
     function    getOuterHtml() : string;
     procedure   setOuterHtml( const aHtml : string );
@@ -73,9 +89,9 @@ private
     procedure   setInnerText16( const aUtf16words: widestring );
     function    getLocation() : TRect;
     function    getStates() : cardinal;
-    procedure   setStates( const aBits : cardinal );
-    function    getState( const aBit : cardinal ) : boolean;
-    procedure   setState( const aBit : cardinal; const aState : boolean );
+    procedure   setStates( aBits : cardinal );
+    function    getState( aBit : cardinal ) : boolean;
+    procedure   setState( aBit : cardinal; aState : boolean );
 
 protected
     function    getChild( const aIndex : integer ) : HELEMENT;
@@ -93,10 +109,13 @@ protected
 
     function    internalUse() : boolean;
     function    internalUnuse() : boolean;
+    procedure   freeResources(); virtual;
+    procedure   internalSetHandler( const aHandler : HELEMENT ); virtual;
 
 public
     constructor Create(); overload; virtual;
     constructor Create( const aHandler : HELEMENT ); overload;
+    constructor Create( const aHElement : THtmlHElement ); overload;
     constructor Create( const aTag : string; const aText : widestring = '' ); overload;
     destructor  Destroy(); override;
 
@@ -127,13 +146,18 @@ public
     function    get_style_attribute( const aAttrName : string ) : widestring;
     procedure   set_style_attribute( const aAttrName : string; const aValue : widestring );
     procedure   set_capture();
-    procedure   select( aCallback : HTMLayoutElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 );
+
+    procedure   select( aCallback : HTMLayoutElementCallback; const aSelector : string; const aParams : POINTER = nil ); overload;
+    procedure   select( aCallback : HTMLayoutHElementCallback; const aSelector : string; const aParams : POINTER = nil ); overload;
+    procedure   select( aCallback : HTMLayoutElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 ); overload;
+    procedure   select( aCallback : HTMLayoutHElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 ); overload;
+    procedure   select( const aSelector : string; var aResult : HELEMENT ); overload;
 
     procedure   update( const render_now : boolean = false ); overload;
     // aMode - bitwise combination of UPDATE_ELEMENT_FLAGS
     procedure   update( const aMode : integer ); overload;
     procedure   redraw();
-    function    get_location( const aArea : HTMLAYOUT_ELEMENT_AREAS = ROOT_RELATIVE ) : TRect;
+    function    get_location( const aArea : HTMLAYOUT_ELEMENT_AREAS = ROOT_RELATIVE ) : TRect; virtual;
     function    is_inside( const client_pt : TPOINT ) : boolean;
     procedure   scroll_to_view( toTopOfView : boolean = false; smooth : boolean = false );
     function    get_element_type() : string;
@@ -142,13 +166,13 @@ public
     function    combine_url( const inURL : widestring ) : widestring;
     procedure   set_html( const html : string; where : HTMLayoutSetHTMLWhere = SIH_REPLACE_CONTENT );
     procedure   clear();
-    function    get_state( const bits : cardinal ) : boolean;
-    procedure   set_state( const bitsToSet : cardinal; const bitsToClear : cardinal = 0; update : boolean = true );
+    function    get_state( bits : cardinal ) : boolean;
+    procedure   set_state( bitsToSet : cardinal; bitsToClear : cardinal = 0; update : boolean = true );
     function    enabled() : boolean;
     function    visible() : boolean;
     procedure   detach(); overload;
-    function    send_event( const event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil ) : boolean;
-    procedure   post_event( const event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil );
+    function    send_event( event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil ) : boolean;
+    procedure   post_event( event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil );
     {** move element to new location given by x_view_rel, y_view_rel - view relative coordinates.
      *  Method defines local styles, so to "stick" it back to the original location you
      *  should call element::clear_all_style_attributes().
@@ -159,19 +183,19 @@ public
     procedure   attach( pevth : HTMLayoutElementEventProc; tag : Pointer = nil; subscription : UINT = HANDLE_ALL );
     procedure   detach( pevth : HTMLayoutElementEventProc; tag : Pointer = nil; subscription : UINT = HANDLE_ALL ); overload;
 
+    function    render( aHBmp : HBITMAP; aDstRect : TRect ) : boolean; overload;
+    function    render( aBitmap : TBitmap ) : boolean; overload;
+
 class procedure release_capture();
 class function  cleanHtml( const aHtml : string ) : string; // remove 0xD, 0xA, 0x9 from string
 
 public // property
     property id : widestring read getId write setId;
-    property width : integer read getWidth write setWidth;
-    property height : integer read getHeight write setHeight;
-    property left : integer read getLeft write setLeft;
-    property top : integer read getTop write setTop;
+
     property tag : string read get_element_type; // div, span, p, etc.
     property uid : UINT read get_element_uid;
     property states : cardinal read getStates write setStates;
-    property state[ const aState : cardinal ] : boolean read getState write setState;
+    property state[ aState : cardinal ] : boolean read getState write setState;
     property lastError : HLDOM_RESULT read FlastError;
     property handler : HELEMENT read Fhandler write setHandler;
     property root : HELEMENT read getRootHandler;
@@ -193,6 +217,15 @@ public // property
     property innerText : string read getInnerText write setInnerText;
     property innerText16 : widestring read getInnerText16 write setInnerText16;
     property location : TRect read getLocation;
+
+public // CSS shorcuts, fill free to extend it.
+    property pxWidth : integer index saWIDTH read getStyleAsInt write setStyleAsInt;
+    property pxHeight : integer index saHEIGHT read getStyleAsInt write setStyleAsInt;
+    property pxLeft : integer index saLEFT read getStyleAsInt write setStyleAsInt;
+    property pxTop : integer index saTOP read getStyleAsInt write setStyleAsInt;
+    property backgroundColor : string index saBACKGROUND_COLOR read getStyleAsString write setStyleAsString;
+    property color : string index saCOLOR read getStyleAsString write setStyleAsString;
+    property visibility : string index saVISIBILITY read getStyleAsString write setStyleAsString;
 
     end;
 
@@ -311,6 +344,7 @@ protected
     Fhandler                    : HELEMENT;
     Felement                    : THtmlElement;
     FelementClass               : CHtmlElement;
+    
 protected
     function    getElement() : THtmlElement;
 
@@ -326,6 +360,10 @@ public
     TElementHolders = class( TObjectList )
 protected
     FelementClass               : CHtmlElement;
+
+public
+    destructor  Destroy(); override;
+
 protected
     function    addElement( aHandler : HELEMENT ) : THtmlElement;
     function    getIndex( aHandler : HELEMENT ) : integer;
@@ -337,9 +375,9 @@ protected
     ***************************************************************************}
     THtmlElement = class( THtmlHElement )
 private
-    FeventHandlers              : TEventHandlers;
     Froot                       : TElementHolder;
     Fparent                     : TElementHolder;
+    FeventHandlers              : TEventHandlers;
     FownElements                : TElementHolders;
 
 protected
@@ -364,6 +402,10 @@ private // events seters and handlers
     procedure   attachDataArrived( const aEventHandler : HTMLElementDataArrivedEventHandler );
     procedure   attachExchange( const aCmd : integer; const aEventHandler : HTMLElementExchangeEventHandler );
     procedure   attachGesture( const aCmd : integer; const aEventHandler : HTMLElementGestureEventHandler );
+    procedure   attachBehavior( const aCmd : integer; const aEventHandler : HTMLElementBehaviorEventHandler );
+
+protected
+    procedure   freeResources(); override;
 
 private // property
     property    eventHandlers : TEventHandlers read getEventHandlers;
@@ -376,6 +418,7 @@ public
     function    use() : THtmlElement;
     function    clone() : THtmlElement;
     function    get_element_by_id( const aId : string ) : THtmlElement;
+    function    get_element_by_handler( const aHandler : HELEMENT ) : THtmlElement;
     function    update( const render_now : boolean = false ) : THtmlElement;  overload;
     function    update( const aMode : integer ) : THtmlElement; overload;
     function    redraw() : THtmlElement;
@@ -437,6 +480,9 @@ public // Event Handlers
     // GESTURE
     function    attach( const aEventHandler : HTMLElementGestureEventHandler; const aCmd : integer = GESTURE_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_GESTURE or DISABLE_INITIALIZATION ) : THtmlCmdEventParams; overload;
     procedure   detach( const aEventHandler : HTMLElementGestureEventHandler; const aCmd : integer = GESTURE_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_GESTURE or DISABLE_INITIALIZATION ); overload;
+    // BEHAVIOR_EVENT
+    function    attach( const aEventHandler : HTMLElementBehaviorEventHandler; const aCmd : integer = BEHAVIOR_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION ) : THtmlCmdEventParams; overload;
+    procedure   detach( const aEventHandler : HTMLElementBehaviorEventHandler; const aCmd : integer = BEHAVIOR_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION ); overload;
 
 public // property
     property root : THtmlElement read getRoot;
@@ -529,7 +575,49 @@ public // events
     property onGestureTap1 : HTMLElementGestureEventHandler index GESTURE_TAP1 write attachGesture;
     property onGestureTap2 : HTMLElementGestureEventHandler index GESTURE_TAP2 write attachGesture;
 
-    end;
+    // BEHAVIOR_EVENT
+    property onButtonClick : HTMLElementBehaviorEventHandler index BUTTON_CLICK write attachBehavior;
+    property onButtonPress : HTMLElementBehaviorEventHandler index BUTTON_PRESS write attachBehavior;
+    property onButtonStateChanged : HTMLElementBehaviorEventHandler index BUTTON_STATE_CHANGED write attachBehavior;
+    property onEditValueChanging : HTMLElementBehaviorEventHandler index EDIT_VALUE_CHANGING write attachBehavior;
+    property onEditValueChanged : HTMLElementBehaviorEventHandler index EDIT_VALUE_CHANGED write attachBehavior;
+    property onSelectSelectionChanged : HTMLElementBehaviorEventHandler index SELECT_SELECTION_CHANGED write attachBehavior;
+    property onSelectStateChanged : HTMLElementBehaviorEventHandler index SELECT_STATE_CHANGED write attachBehavior;
+    property onPopupRequest : HTMLElementBehaviorEventHandler index POPUP_REQUEST write attachBehavior;
+    property onPopupReady : HTMLElementBehaviorEventHandler index POPUP_READY write attachBehavior;
+    property onPopupDismissed : HTMLElementBehaviorEventHandler index POPUP_DISMISSED write attachBehavior;
+    property onMenuItemActive : HTMLElementBehaviorEventHandler index MENU_ITEM_ACTIVE write attachBehavior;
+    property onMenuItemClick : HTMLElementBehaviorEventHandler index MENU_ITEM_CLICK write attachBehavior;
+    property onContextMenuSetup : HTMLElementBehaviorEventHandler index CONTEXT_MENU_SETUP write attachBehavior;
+    property onContextMenuRequest : HTMLElementBehaviorEventHandler index CONTEXT_MENU_REQUEST write attachBehavior;
+    property onVisiualStatusChanged : HTMLElementBehaviorEventHandler index VISIUAL_STATUS_CHANGED write attachBehavior;
+    property onDisabledStatusChanged : HTMLElementBehaviorEventHandler index DISABLED_STATUS_CHANGED write attachBehavior;
+    property onPopupDismissing : HTMLElementBehaviorEventHandler index POPUP_DISMISSING write attachBehavior;
+    // "grey" event codes  - notfications from behaviors from this SDK
+    property onHyperLinkClick : HTMLElementBehaviorEventHandler index HYPERLINK_CLICK write attachBehavior;
+    property onTableHeaderClick : HTMLElementBehaviorEventHandler index TABLE_HEADER_CLICK write attachBehavior;
+    property onTableRowClick : HTMLElementBehaviorEventHandler index TABLE_ROW_CLICK write attachBehavior;
+    property onTableRowDblClick : HTMLElementBehaviorEventHandler index TABLE_ROW_DBL_CLICK write attachBehavior;
+    property onElementCollapsed : HTMLElementBehaviorEventHandler index ELEMENT_COLLAPSED write attachBehavior;
+    property onElementExpanded : HTMLElementBehaviorEventHandler index ELEMENT_EXPANDED write attachBehavior;
+    property onActivateChild : HTMLElementBehaviorEventHandler index ACTIVATE_CHILD write attachBehavior;
+    property onDoSwitchTab : HTMLElementBehaviorEventHandler index DO_SWITCH_TAB write attachBehavior;
+    property onInitDataView : HTMLElementBehaviorEventHandler index INIT_DATA_VIEW write attachBehavior;
+    property onRowsDataRequest : HTMLElementBehaviorEventHandler index ROWS_DATA_REQUEST write attachBehavior;
+    property onUiStateChanged : HTMLElementBehaviorEventHandler index UI_STATE_CHANGED write attachBehavior;
+    property onFormSubmit : HTMLElementBehaviorEventHandler index FORM_SUBMIT write attachBehavior;
+    property onFormReset : HTMLElementBehaviorEventHandler index FORM_RESET write attachBehavior;
+    property onDocumentComplete : HTMLElementBehaviorEventHandler index DOCUMENT_COMPLETE write attachBehavior;
+    property onhistoryPush : HTMLElementBehaviorEventHandler index HISTORY_PUSH write attachBehavior;
+    property onHistoryDrop : HTMLElementBehaviorEventHandler index HISTORY_DROP write attachBehavior;
+    property onHistoryPrior : HTMLElementBehaviorEventHandler index HISTORY_PRIOR write attachBehavior;
+    property onHistoryNext : HTMLElementBehaviorEventHandler index HISTORY_NEXT write attachBehavior;
+    property onHistoryStateChanged : HTMLElementBehaviorEventHandler index HISTORY_STATE_CHANGED write attachBehavior;
+    property onClosePopup : HTMLElementBehaviorEventHandler index CLOSE_POPUP write attachBehavior;
+    property onRequestTooltip : HTMLElementBehaviorEventHandler index REQUEST_TOOLTIP write attachBehavior;
+    property onAnimation : HTMLElementBehaviorEventHandler index ANIMATION write attachBehavior;
+
+    end;
 
     {***************************************************************************
     * THtmlShim
@@ -581,6 +669,11 @@ public // property
 implementation
 
 uses HtmlEvents;
+
+const
+    mapHTML_STYLE_ATTRS : array[ HTML_STYLE_ATTRS ] of string = (
+        'width', 'height', 'top', 'left', 'background-color', 'color', 'visibility'
+    );
 
 var
     GlobalShim : THtmlShim;
@@ -878,6 +971,15 @@ end;
 {*******************************************************************************
 * Create
 *******************************************************************************}
+constructor THtmlHElement.Create( const aHElement : THtmlHElement );
+begin
+    assert( aHElement.is_valid() );
+    Create( aHElement.handler );
+end;
+
+{*******************************************************************************
+* Create
+*******************************************************************************}
 constructor THtmlHElement.Create( const aTag : string; const aText : widestring = '' );
 begin
     Create();
@@ -891,6 +993,7 @@ end;
 destructor THtmlHElement.Destroy();
 begin
     assert( Funused, 'You have to call unuse to free the object! Do not call Free or FreeAndNil' );
+    freeResources();    
     internalUnuse();
     inherited;
 end;
@@ -921,6 +1024,13 @@ begin
     begin
         Fhandler := nil;
     end;
+end;
+
+{*******************************************************************************
+* freeResources
+*******************************************************************************}
+procedure THtmlHElement.freeResources();
+begin // Just a placeholder for a time
 end;
 
 {*******************************************************************************
@@ -1026,8 +1136,7 @@ end;
 *******************************************************************************}
 function THtmlHElement.is_valid() : boolean;
 begin
-    getElementUid( Fhandler );
-    Result := ( FlastError = HLDOM_OK );
+    Result := ( Fhandler <> nil ) and is_valid( Fhandler );
 end;
 
 {*******************************************************************************
@@ -1035,8 +1144,12 @@ end;
 *******************************************************************************}
 function THtmlHElement.is_valid( const aHandler : HELEMENT ) : boolean;
 begin
-    getElementUid( aHandler );
-    Result := ( FlastError = HLDOM_OK );
+    Result := false;
+    try
+        getElementUid( aHandler );
+        Result := ( FlastError = HLDOM_OK );
+    except
+    end
 end;
 
 {*******************************************************************************
@@ -1287,6 +1400,7 @@ var
 begin
     s := aValue;
 
+    // filtering out non digits at the end of string value
     for i := 1 to Length( aValue ) do
     begin
         ch := Ord( aValue[i] );
@@ -1301,67 +1415,35 @@ begin
 end;
 
 {*******************************************************************************
-* getWidth
+* setStyleAsInt
 *******************************************************************************}
-function THtmlHElement.getWidth() : integer;
+procedure THtmlHElement.setStyleAsInt( const aAttrIndex : integer; const aValue : integer );
 begin
-    Result := StyleStrToInt( style[ 'width' ] );
+    style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ] := IntToStr( aValue );
 end;
 
 {*******************************************************************************
-* setWidth
+* getStyleAsInt
 *******************************************************************************}
-procedure THtmlHElement.setWidth( const aPxValue : integer );
+function THtmlHElement.getStyleAsInt( const aAttrIndex : integer ) : integer;
 begin
-     style[ 'width' ] := IntToStr( aPxValue );
+    Result := StyleStrToInt( style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ] );
 end;
 
 {*******************************************************************************
-* getHeight
+* setStyleAsString
 *******************************************************************************}
-function THtmlHElement.getHeight() : integer;
+procedure THtmlHElement.setStyleAsString( const aAttrIndex : integer; const aValue : string );
 begin
-    Result := StyleStrToInt( style[ 'height' ] );
+    style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ] := aValue;
 end;
 
 {*******************************************************************************
-* setHeight
+* getStyleAsString
 *******************************************************************************}
-procedure THtmlHElement.setHeight( const aPxValue : integer );
+function THtmlHElement.getStyleAsString( const aAttrIndex : integer ) : string;
 begin
-     style[ 'height' ] := IntToStr( aPxValue );
-end;
-
-{*******************************************************************************
-* getTop
-*******************************************************************************}
-function THtmlHElement.getTop() : integer;
-begin
-    Result := StyleStrToInt( style[ 'top' ] );
-end;
-
-{*******************************************************************************
-* setTop
-*******************************************************************************}
-procedure THtmlHElement.setTop( const aPxValue : integer );
-begin
-     style[ 'top' ] := IntToStr( aPxValue );
-end;
-
-{*******************************************************************************
-* getLeft
-*******************************************************************************}
-function THtmlHElement.getLeft() : integer;
-begin
-    Result := StyleStrToInt( style[ 'left' ] );
-end;
-
-{*******************************************************************************
-* setLeft
-*******************************************************************************}
-procedure THtmlHElement.setLeft( const aPxValue : integer );
-begin
-     style[ 'left' ] := IntToStr( aPxValue );
+    Result := style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ];
 end;
 
 {*******************************************************************************
@@ -1500,6 +1582,64 @@ begin
     assert( FlastError = HLDOM_OK );
 end;
 
+
+{*******************************************************************************
+* select
+*******************************************************************************}
+function HtmlHElementSelect( he : HELEMENT; aParams : POINTER ) : BOOL; stdcall;
+begin
+    Result := PRSelectHandler( aParams ).callback( he, PRSelectHandler( aParams ).params );
+end;
+
+procedure THtmlHElement.select( aCallback : HTMLayoutHElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 );
+var
+    h : RSelectHandler;
+begin
+    h.callback := aCallback;
+    h.params   := aParams;
+    select( HtmlHElementSelect, @h, aTag, aAttrName, aAttrValue, aDepth );
+end;
+
+{*******************************************************************************
+* select
+*******************************************************************************}
+procedure THtmlHElement.select( aCallback : HTMLayoutElementCallback; const aSelector : string; const aParams : POINTER = nil );
+begin
+    assert( is_valid() );
+    FlastError := HTMLayoutSelectElements( Fhandler, LPCSTR( aSelector ), aCallback, aParams );
+    assert( FlastError = HLDOM_OK );
+end;
+
+{*******************************************************************************
+* HtmlHElementSelectFirst
+*******************************************************************************}
+function HtmlHElementSelectFirst( he : HELEMENT; aParams : POINTER ) : BOOL; stdcall;
+begin
+    Result  := true;
+    PHELEMENT( aParams )^ := he;
+end;
+
+procedure THtmlHElement.select( const aSelector : string; var aResult : HELEMENT );
+var
+    el : HELEMENT;
+begin
+    el := nil;
+    select( HtmlHElementSelectFirst, aSelector, @el );
+    aResult := el;
+end;
+
+{*******************************************************************************
+* select
+*******************************************************************************}
+procedure THtmlHElement.select( aCallback : HTMLayoutHElementCallback; const aSelector : string; const aParams : POINTER = nil );
+var
+    h : RSelectHandler;
+begin
+    h.callback := aCallback;
+    h.params   := aParams;
+    select( HtmlHElementSelect, aSelector, @h );
+end;
+
 {*******************************************************************************
 * redraw
 *******************************************************************************}
@@ -1618,8 +1758,21 @@ end;
 *******************************************************************************}
 procedure THtmlHElement.setHandler( const aHandler : HELEMENT );
 begin
+    internalSetHandler( aHandler );
+end;
+
+{*******************************************************************************
+* internalSetHandler
+*******************************************************************************}
+procedure THtmlHElement.internalSetHandler( const aHandler : HELEMENT );
+begin
+    freeResources();
+
     internalUnuse();
     Fhandler := aHandler;
+    if ( Fhandler = nil ) then
+        exit;
+        
     internalUse();
 end;
 
@@ -1717,7 +1870,8 @@ end;
 *******************************************************************************}
 function THtmlHElement.getLocation() : TRect;
 begin
-    Result := get_location( CONTENT_BOX );
+    //Result := get_location( CONTENT_BOX );
+    Result := get_location( BORDER_BOX );
 end;
 
 {*******************************************************************************
@@ -1845,7 +1999,7 @@ end;
 {*******************************************************************************
 * setState
 *******************************************************************************}
-procedure THtmlHElement.setStates( const aBits : cardinal );
+procedure THtmlHElement.setStates( aBits : cardinal );
 begin
     assert( is_valid() );
     FlastError := HTMLayoutSetElementState( Fhandler, aBits, not aBits, true );
@@ -1855,7 +2009,7 @@ end;
 {*******************************************************************************
 * get_state
 *******************************************************************************}
-function THtmlHElement.get_state( const bits : cardinal ) : boolean;
+function THtmlHElement.get_state( bits : cardinal ) : boolean;
 begin
     Result := ( states and bits = bits ) and ( FlastError = HLDOM_OK );
 end;
@@ -1863,7 +2017,7 @@ end;
 {*******************************************************************************
 * set_state
 *******************************************************************************}
-procedure THtmlHElement.set_state( const bitsToSet : cardinal; const bitsToClear : cardinal = 0; update : boolean = true );
+procedure THtmlHElement.set_state( bitsToSet : cardinal; bitsToClear : cardinal = 0; update : boolean = true );
 begin
     assert( is_valid() );
     FlastError := HTMLayoutSetElementState( Fhandler, bitsToSet, bitsToClear, update );
@@ -1873,7 +2027,7 @@ end;
 {*******************************************************************************
 * getState
 *******************************************************************************}
-function THtmlHElement.getState( const aBit : cardinal ) : boolean;
+function THtmlHElement.getState( aBit : cardinal ) : boolean;
 begin
     Result := ( states and aBit = aBit ) and ( FlastError = HLDOM_OK );
 end;
@@ -1881,7 +2035,7 @@ end;
 {*******************************************************************************
 * setState
 *******************************************************************************}
-procedure THtmlHElement.setState( const aBit : cardinal; const aState : boolean );
+procedure THtmlHElement.setState( aBit : cardinal; aState : boolean );
 begin
     if ( aState ) then
         set_state( aBit, 0, true )
@@ -1966,7 +2120,7 @@ end;
 {*******************************************************************************
 * send_event
 *******************************************************************************}
-function THtmlHElement.send_event( const event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil ) : boolean;
+function THtmlHElement.send_event( event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil ) : boolean;
 var
     handled : BOOL;
 
@@ -1985,7 +2139,7 @@ end;
 {*******************************************************************************
 * post_event
 *******************************************************************************}
-procedure THtmlHElement.post_event( const event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil );
+procedure THtmlHElement.post_event( event_code : cardinal; reason : cardinal = 0; heSource : HELEMENT = nil );
 begin
     assert( is_valid() );
     if ( not assigned( heSource ) ) then
@@ -2023,7 +2177,7 @@ end;
 procedure THtmlHElement.move( x_view_rel, y_view_rel : integer );
 begin
     assert( is_valid() );
-    FlastError := HTMLayoutMoveElementEx( Fhandler, x_view_rel, y_view_rel, width, height );
+    FlastError := HTMLayoutMoveElementEx( Fhandler, x_view_rel, y_view_rel, pxWidth, pxHeight );
     assert( FlastError = HLDOM_OK );
 end;
 
@@ -2035,6 +2189,69 @@ begin
     assert( is_valid() );
     FlastError := HTMLayoutMoveElementEx( Fhandler, x_view_rel, y_view_rel, aWidth, aHeight );
     assert( FlastError = HLDOM_OK );
+end;
+
+{*******************************************************************************
+* render
+*******************************************************************************}
+function THtmlHElement.render( aBitmap : TBitmap ) : boolean;
+var
+    rectSelf : TRect;
+begin
+//    rectSelf := get_location( HTMLAYOUT_ELEMENT_AREAS( integer( MARGIN_BOX ) or integer( ROOT_RELATIVE ) ) );
+    rectSelf := get_location( BORDER_BOX );
+    aBitmap.Width  := rectSelf.Right - rectSelf.Left;
+    aBitmap.Height := rectSelf.Bottom - rectSelf.Top;
+
+    rectSelf.Left   := 0;
+    rectSelf.Top    := 0;
+    rectSelf.Right  := aBitmap.Width;
+    rectSelf.Bottom := aBitmap.Height;
+
+    Result := render( aBitmap.Canvas.Handle, rectSelf );
+end;
+
+{*******************************************************************************
+* render
+*******************************************************************************}
+function THtmlHElement.render( aHBmp : HBITMAP; aDstRect : TRECT ) : boolean;
+var
+    bmpRoot  : TBitmap;
+    rectRoot : TRect;
+    rectSelf : TRect;
+    hwndRoot : HWND;
+    //s        : string;
+
+begin
+    hwndRoot := get_element_hwnd( true );
+    Result := GetClientRect( hwndRoot, rectRoot );
+    if ( not Result ) then
+        exit;
+
+    try
+        // get the bitmap for the whole document
+        bmpRoot := TBitmap.Create();
+        bmpRoot.PixelFormat := pf24bit;
+        bmpRoot.Width  := rectRoot.Right - rectRoot.Left;
+        bmpRoot.Height := rectRoot.Bottom - rectRoot.Top;
+        //rectSelf := get_location( HTMLAYOUT_ELEMENT_AREAS( integer( MARGIN_BOX ) or integer( ROOT_RELATIVE ) ) );
+        rectSelf := get_location( BORDER_BOX );
+
+        Result := HTMLayoutRender( hwndRoot, bmpRoot.Handle, rectRoot );
+        //bmpRoot.SaveToFile( 'root.bmp' );
+
+        // copy the bitmap area for the DOM element
+        Result := BitBlt( aHBmp, aDstRect.Left, aDstRect.Top, aDstRect.Right - aDstRect.Left, aDstRect.Bottom - aDstRect.Top, bmpRoot.Canvas.Handle, rectSelf.Left, rectSelf.Top, SRCCOPY );
+        {if ( not Result ) then
+        begin
+            s := GetLastOSErrorText();
+            if ( s <> '' ) then if ( s <> '' ) then;
+        end;}
+
+        assert( Result );
+    finally
+        FreeAndNil( bmpRoot );
+    end;
 end;
 
 {-------------------------------- THtmlElement --------------------------------}
@@ -2051,7 +2268,7 @@ begin
 
     Froot           := nil;
     Fparent         := nil;
-    FownElements       := nil;
+    FownElements    := nil;
 end;
 
 {*******************************************************************************
@@ -2060,13 +2277,18 @@ end;
 destructor THtmlElement.Destroy();
 begin
     //dettachElementProcEventHandler();
+    inherited;
+end;
+
+{*******************************************************************************
+* freeResources
+*******************************************************************************}
+procedure THtmlElement.freeResources();
+begin
     FreeAndNil( Froot );
     FreeAndNil( Fparent );
     FreeAndNil( FownElements );
-
     FreeAndNil( FeventHandlers );
-
-    inherited;
 end;
 
 {*******************************************************************************
@@ -2161,6 +2383,14 @@ end;
 function THtmlElement.get_element_by_id( const aId : string ) : THtmlElement;
 begin
     Result := ownElements.addElement( getHandlerById( aId ) );
+end;
+
+{*******************************************************************************
+* get_element_by_handler
+*******************************************************************************}
+function THtmlElement.get_element_by_handler( const aHandler : HELEMENT ) : THtmlElement;
+begin
+    Result := ownElements.addElement( aHandler );
 end;
 
 {*******************************************************************************
@@ -2624,6 +2854,30 @@ begin
     detach( TMethod( aEventHandler ), aCmd, aTag, aSubscription );
 end;
 
+{------------------------------ HANDLE_BEHAVIOR -------------------------------}
+
+procedure THtmlElement.attachBehavior( const aCmd : integer; const aEventHandler : HTMLElementBehaviorEventHandler );
+begin
+    attach( aEventHandler, aCmd, nil );
+end;
+
+function THtmlElement.attach( const aEventHandler : HTMLElementBehaviorEventHandler; const aCmd : integer = BEHAVIOR_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION ) : THtmlCmdEventParams;
+begin
+    if ( aCmd = BEHAVIOR_ALL ) then
+        Result := THtmlBehaviorEvent.Create( self, TMethod( aEventHandler ), aTag, aSubscription )
+    else
+        Result := THtmlBehaviorCmd.Create( self, aCmd, TMethod( aEventHandler ), aTag, aSubscription );
+
+    attach( Result );
+end;
+
+procedure THtmlElement.detach( const aEventHandler : HTMLElementBehaviorEventHandler; const aCmd : integer = BEHAVIOR_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION );
+begin
+    detach( TMethod( aEventHandler ), aCmd, aTag, aSubscription );
+end;
+
+
+
 {------------------------------- THtmlShim ------------------------------------}
 
 {*******************************************************************************
@@ -2863,6 +3117,22 @@ begin
 end;
 
 {--------------------------- TElementHolders ----------------------------------}
+
+{*******************************************************************************
+* addElement
+*******************************************************************************}
+destructor TElementHolders.Destroy();
+var
+    i : integer;
+begin
+    for i := 0 to Count - 1 do
+    begin
+        assert( TElementHolder( Items[i] ).Felement <> nil );
+        TElementHolder( Items[i] ).Felement.unuse();
+    end;
+
+    inherited;
+end;
 
 {*******************************************************************************
 * addElement

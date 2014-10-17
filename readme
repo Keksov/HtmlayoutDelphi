@@ -11,7 +11,7 @@ Delphi binding for HTMLayout
  
 Created with HTMLayout SDK v 3.3.3.13
 
-All functions from layout.h and layout_dom.h are imported. Several DOM object wrappers introduced.
+All functions from layout.h and layout_dom.h are imported. Several DOM object wrappers were introduced.
 Download SDK from official site http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 For getting help on HTMLayout itself please visit forum at http://www.terrainformatica.com/forum/list.php?3 
 If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help, especially this topic 

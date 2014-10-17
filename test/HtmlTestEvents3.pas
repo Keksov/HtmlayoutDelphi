@@ -2,6 +2,8 @@ unit HtmlTestEvents3;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses classes, sysutils, forms, Controls, types, windows
     , HtmlCtrl
     , HtmlElement

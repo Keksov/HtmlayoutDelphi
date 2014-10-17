@@ -2,6 +2,8 @@ unit HtmlTestEvents2;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses classes, sysutils, forms, Controls, types, windows
     , HtmlCtrl
     , HtmlElement
@@ -61,7 +63,10 @@ begin
 
     //if ( cmd.sinking ) then
     //    exit;
-        
+
+    if ( cmd.code in [ MOUSE_ENTER, MOUSE_LEAVE, MOUSE_MOVE, MOUSE_IDLE, MOUSE_TICK ] ) then
+        exit;
+
     case cmd.code of
     MOUSE_ENTER : // 0
         msg := 'MOUSE_ENTER';
@@ -76,13 +81,13 @@ begin
         begin
             msg := 'MOUSE_UP';
             //Result := false;
-            //THtmlShim.hl( aParams.target ).release_capture();
+            THtmlShim.get( aParams.target ).release_capture();
         end;
     MOUSE_DOWN : // 4
         begin
             msg := 'MOUSE_DOWN';
             //Result := false;
-            //THtmlShim.hl( aParams.target ).set_capture();
+            THtmlShim.get( aParams.target ).set_capture();
         end;
     MOUSE_DCLICK : // 5
         msg := 'MOUSE_DCLICK';
@@ -150,8 +155,12 @@ INITIALIZATION
     body := body + '<div id="test" style="height:50px;width:400px;border: 1px solid red;">';
     body := body + '<form id="form"><input type="text" id="editText"></input></form>';
     body := body + '<div id="sub" style="width:400px;border: 1px solid blue;">sub item</div>';
+    body := body + '<a id="1234" href="#">MYLINK</a>';    
     body := body + '</div>';
+
     body := body + '<div id="events" style="height:50px;width:600x;border: 1px dotted green;">Events tracker</div>';
+
+
     s := '<html><head id="head">' + head + '</head><body id="body">' + body + '</body></html>';
 
     html.html := s;
@@ -170,11 +179,11 @@ INITIALIZATION
 
     tester := TEventsTester.Create();
 
-    //elTest := elBody.get_element_by_id( 'test' );
+    elEvents := elBody.get_element_by_id( '1234' );
 
 //-------------------------- BEHAVIOUR TESTING ---------------------------------
-
-    elBody.onMouse := tester.onMouse;
+    elEvents.onMouse := tester.onMouse;
+    //elBody.onMouse := tester.onMouse;
 
 FINALIZATION
     elBody.unuse();

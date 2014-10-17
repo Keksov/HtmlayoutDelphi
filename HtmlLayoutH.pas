@@ -12,6 +12,8 @@ unit HtmlLayoutH;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses Windows
     , HtmlTypes
     , HtmlBehaviorH
@@ -19,26 +21,157 @@ uses Windows
 ;
 
 const
+{**This notification is sent on parsing the document and while handling
+ * &lt;INPUT&gt;, &lt;TEXTAREA&gt;, &lt;SELECT&gt; and &lt;WIDGET&gt; tags.
+ *
+ * \param lParam #LPNMHL_CREATE_CONTROL.
+ * \return HWND of the control or #HWND_TRY_DEFAULT or #HWND_DISCARD_CREATION.
+ *
+ * This notification is sent when HtmLayout is about to create a child control.
+ * The application can override the creation of "standard HTML controls" or
+ * implement the creation of other application specific controls. To do this assign
+ * HWND of newly created control to #NMHL_CREATE_CONTROL::outControlHwnd member of
+ * #NMHL_CREATE_CONTROL.
+ **}
     HLN_CREATE_CONTROL          = $AFF + $01;
+
+{**Notifies that HtmLayout is about to download a referred resource.
+ *
+ * \param lParam #LPNMHL_LOAD_DATA.
+ * \return #LOAD_OK or #LOAD_DISCARD
+ *
+ * This notification gives application a chance to override built-in loader and
+ * implement loading of resources in its own way (for example images may be loaded from
+ * database or other resource). To do this set #NMHL_LOAD_DATA::outData and
+ * #NMHL_LOAD_DATA::outDataSize members of NMHL_LOAD_DATA. HTMLayout does not
+ * store pointer to this data. You can call #HTMLayoutDataReady() function instead
+ * of filling these fields. This allows you to free your outData buffer
+ * immediately.
+**}
     HLN_LOAD_DATA               = $AFF + $02;
+
+{**This notification is sent when control creation process has completed.
+ *
+ * \param lParam #LPNMHL_CREATE_CONTROL.
+ *
+ * While processing this notification application can modify control settings
+ * or store information about the created control.
+ * For example it can use SetWindowLong() function, to set control's id:
+ * \code
+ * SetWindowLong(((LPNMHL_CREATECONTROL)lParam)->outControlHwnd, GWL_ID, controlId)
+ * \endcode
+ **}
     HLN_CONTROL_CREATED         = $AFF + $03;
+
+{**This notification indicates that external data (for example image) download process
+ * completed.
+ *
+ * \param lParam #LPNMHL_DATA_LOADED
+ *
+ * This notifiaction is sent for each external resource used by document when
+ * this resource has been completely downloaded. HTMLayout will send this
+ * notification asynchronously.
+ **}
     HLN_DATA_LOADED             = $AFF + $04;
+
+{**This notification is sent when all external data (for example image) has been downloaded.
+ *
+ * This notification is sent when all external resources required by document
+ * have been completely downloaded. HTMLayout will send this notification
+ * asynchronously.
+ **}
     HLN_DOCUMENT_COMPLETE       = $AFF + $05;
+
+{**This notification instructs host application to update its UI.
+ *
+ * This notification is sent on changes in HTMLayout formatting registers.
+ * If application indicates their state on toolbars or using other controls it
+ * should update them.
+ **}
     HLN_UPDATE_UI               = $AFF + $06;
+
+
+{**This notification is sent when HTMLayout destroys its controls.
+ *
+ * \param lParam #LPNMHL_DESTROY_CONTROL
+ * Before loading new document HTMLayout destroys all controls belonging to
+ * previous document. Host application can reject deletion of the control by
+ * setting NMHL_DESTROY_CONTROL::inoutControlHwnd to zero.
+ *
+ * Handling of this notification makes sence when you need for example reload
+ * HTML without destroying set of controls on HTML form.
+ * But you still need to handle NMHL_CREATE_CONTROL notification to bind
+ * existing controls with their HTML "places"
+ *
+ * \attention HTMLayouts sends this notifiation only while loading new or
+ * empty document.
+ **}
     HLN_DESTROY_CONTROL         = $AFF + $07;
+
+{**This notification is sent on parsing the document and while processing
+ * elements having non empty style.behavior attribute value.
+ *
+ * \param lParam #LPNMHL_ATTACH_BEHAVIOR
+ *
+ * Application has to provide implementation of #htmlayout::behavior interface.
+ * Set #NMHL_ATTACH_BEHAVIOR::impl to address of this implementation.
+ **}
     HLN_ATTACH_BEHAVIOR         = $AFF + $08;
+
+{**This notification is sent after DOM element has changed its behavior(s)
+ *
+ * \param lParam #LPNMHL_BEHAVIOR_CHANGED
+ *
+ **}
     HLN_BEHAVIOR_CHANGED        = $AFF + $09;
+
+{**This notification is sent when dialog window created but document is not loaded
+ *
+ *
+ * \param lParam is a pointer to statndard NMHDR
+ *
+ * ATTN: Will be sent ONLY by HTMLayoutDialog API function.
+ **}
     HLN_DIALOG_CREATED          = $AFF + $10;
+
+{**This notification is sent when dialog window is about to be closed
+ * - happens while handling WM_CLOSE in dialog
+ *
+ * \param lParam #LPNMHL_DIALOG_CLOSE_RQ
+ *
+ * ATTN: Will be sent ONLY by HTMLayoutDialog API function.
+ **}
     HLN_DIALOG_CLOSE_RQ         = $AFF + $0A;
+
+{**This notification is sent when document is loaded and parsed in full.
+ *
+ * This notification is sent before HLN_DOCUMENT_COMPLETE
+ *
+ **}
     HLN_DOCUMENT_LOADED         = $AFF + $0B;
 
+{**Create "default HTML control", used by #HLN_CREATE_CONTROL notification as
+ * value for #NMHL_CREATE_CONTROL::outControlHwnd.
+ **}
     HWND_TRY_DEFAULT            = HWND(0);
+
+{**Do not create any controls, used by #HLN_CREATE_CONTROL notification as
+ * value for #NMHL_CREATE_CONTROL::outControlHwnd.
+ **}
     HWND_DISCARD_CREATION       = HWND(1);
 
+{**Use default loader or outData/outDataSize if they are set,
+ * used as a return value for #HLN_CREATE_CONTROL notification.
+ **}
     LOAD_OK                     = 0;
+
+{**Do not load resource at all,
+ * Used as a return value for #HLN_CREATE_CONTROL notification.
+ **}
     LOAD_DISCARD                = 1;
 
-    WPARAM_DISCARD_BUILTIN_DD_SUPP0RT = $8000; // pass this value in wParam of WM_CREATE or WM_INITDIALOG to disable builtin IDropSource/IDropTatget (Drag-n-drop)
+// pass this value in wParam of WM_CREATE or WM_INITDIALOG to disable builtin IDropSource/IDropTatget (Drag-n-drop)
+    WPARAM_DISCARD_BUILTIN_DD_SUPP0RT = $8000;
 
 type
     // typedef LRESULT CALLBACK HTMLAYOUT_NOTIFY(UINT uMsg, WPARAM wParam, LPARAM lParam, LPVOID vParam);
@@ -50,6 +183,16 @@ type
     HTMLAYOUT_DATA_LOADER       = function( uri : LPCWSTR; dataType : UINT {HTMLayoutResourceType}; pDataWriter : HTMLAYOUT_DATA_WRITER ) : BOOL stdcall;
     HTMLAYOUT_DEBUG_OUTPUT_PROC = procedure( param : Pointer; character : integer ); stdcall;
 
+{**This structure is used by #HLN_CREATE_CONTROL and #HLN_CONTROL_CREATED
+ * notifications.
+ *
+ * - #HLN_CREATE_CONTROL
+ * \copydoc HLN_CREATE_CONTROL
+ *
+ * - #HLN_CONTROL_CREATED
+ *   \copydoc HLN_CONTROL_CREATED
+ *
+ **}
     NMHL_CREATE_CONTROL = record
         hdr                     : NMHDR; // Default WM_NOTIFY header
         helement                : HELEMENT; // [in] DOM element.
@@ -60,6 +203,9 @@ type
     end;
     PNMHL_CREATE_CONTROL = ^NMHL_CREATE_CONTROL;
 
+{**This structure is used by #HLN_DESTROY_CONTROL notification.
+ * \copydoc HLN_DESTROY_CONTROL
+ **}
     NMHL_DESTROY_CONTROL = record
         hdr                     : NMHDR; // Default WM_NOTIFY header
         helement                : HELEMENT; // [in] DOM element.
@@ -68,6 +214,8 @@ type
     end;
     PNMHL_DESTROY_CONTROL = ^NMHL_DESTROY_CONTROL;
 
+{**This structure is used by #HLN_LOAD_DATA notification.
+ *\copydoc HLN_LOAD_DATA **}
     NMHL_LOAD_DATA = record
         hdr                     : NMHDR; // Default WM_NOTIFY header
         uri                     : LPCWSTR; // [in] Zero terminated string, fully qualified uri, for example "http://server/folder/file.ext"
@@ -79,6 +227,9 @@ type
     end;
     PNMHL_LOAD_DATA = ^NMHL_LOAD_DATA;
 
+{**This structure is used by #HLN_DATA_LOADED notification.
+ *\copydoc HLN_DATA_LOADED
+ **}
     NMHL_DATA_LOADED = record
         hdr                     : NMHDR; // Default WM_NOTIFY header
         uri                     : LPCWSTR; // [in] zero terminated string, fully qualified uri, for example "http://server/folder/file.ext".
@@ -92,6 +243,8 @@ type
     end;
     PNMHL_DATA_LOADED = ^NMHL_DATA_LOADED;
 
+{**This structure is used by #HLN_ATTACH_BEHAVIOR notification.
+ *\copydoc HLN_ATTACH_BEHAVIOR **}
     NMHL_ATTACH_BEHAVIOR = record
         hdr                     : NMHDR; // Default WM_NOTIFY header
         helement                : HELEMENT; // [in] DOM element.
@@ -103,6 +256,8 @@ type
     end;
     PNMHL_ATTACH_BEHAVIOR = ^NMHL_ATTACH_BEHAVIOR;
 
+{**This structure is used by #HLN_BEHAVIOR_CHANGED notification.
+ *\copydoc HLN_BEHAVIOR_CHANGED **}
     NMHL_BEHAVIOR_CHANGED = record
         hdr                     : NMHDR; // Default WM_NOTIFY header.
         helement                : HELEMENT; // [in] DOM element.
@@ -111,6 +266,8 @@ type
     end;
     PNMHL_BEHAVIOR_CHANGED = ^NMHL_BEHAVIOR_CHANGED;
 
+{**This structure is used by #HLN_DIALOG_CLOSE_RQ notification.
+ *\copydoc HLN_LOAD_DATA **}
     NMHL_DIALOG_CLOSE_RQ = record
         hdr                     : NMHDR; // Default WM_NOTIFY header.
         outCancel               : BOOL; // [out] set it to non-zero for canceling close request.
@@ -166,7 +323,7 @@ function  HTMLayoutLoadFile( hwnd : HWND; filename : LPCWSTR) : BOOL; stdcall;
 function  HTMLayoutLoadHtml( hwnd : HWND; html : LPCBYTE; htmlSize: UINT): BOOL; stdcall;
 function  HTMLayoutLoadHtmlEx( hwnd : HWND; html : LPCBYTE; htmlSize : UINT; baseUrl : LPCWSTR) : BOOL; stdcall;
 procedure HTMLayoutSetMode( hwnd : HWND; HTMLayoutMode : integer {HTMLayoutModes} ); stdcall;
-procedure HTMLayoutSetCallback(hwnd: HWND; cb: HTMLayoutNotify; cbParam: Pointer); stdcall;
+procedure HTMLayoutSetCallback( hwnd : HWND; cb : HTMLayoutNotify; cbParam : Pointer ); stdcall;
 function  HTMLayoutSelectionExist( hwnd : HWND ) : BOOL; stdcall;
 function  HTMLayoutGetSelectedHTML( hwnd : HWND; var pSize : UINT ) : LPCBYTE; stdcall;
 function  HTMLayoutClipboardCopy( hwnd : HWND ) : BOOL; stdcall;

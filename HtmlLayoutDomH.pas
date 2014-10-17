@@ -12,6 +12,8 @@ unit HtmlLayoutDomH;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses Windows
     , HtmlTypes
     , HtmlBehaviorH
@@ -87,7 +89,7 @@ type
         ROOT_RELATIVE           = $01, // - or this flag if you want to get HTMLayout window relative coordinates,
                                        //   otherwise it will use nearest windowed container e.g. popup window.
         SELF_RELATIVE           = $02, // - "or" this flag if you want to get coordinates relative to the origin
-                                       //   of element iself.
+                                       //   of element itself.
         CONTAINER_RELATIVE      = $03, // - position inside immediate container.
         VIEW_RELATIVE           = $04, // - position relative to view - HTMLayout window
 

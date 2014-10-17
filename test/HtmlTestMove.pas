@@ -2,6 +2,8 @@ unit HtmlTestMove;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses classes, sysutils, forms, Controls, types, windows
     , HtmlCtrl
     , HtmlElement
@@ -73,8 +75,8 @@ begin
     if ( not THTMLayoutEvent.leftPressed( aParams ) ) then
         exit;
 
-    aSender.left := aSender.left + aParams.pos.x - aSender.attrAsInt[ 'move_x_start' ];
-    aSender.top  := aSender.top + aParams.pos.y - aSender.attrAsInt[ 'move_y_start' ];
+    aSender.pxLeft := aSender.pxLeft + aParams.pos.x - aSender.attrAsInt[ 'move_x_start' ];
+    aSender.pxTop  := aSender.pxTop + aParams.pos.y - aSender.attrAsInt[ 'move_y_start' ];
 end;
 
 {*******************************************************************************
@@ -223,7 +225,7 @@ INITIALIZATION
     assert( elRoot.childrenCount = 2 );
     assert( elRoot.tag = 'html' );
 
-    elBody := elRoot.child[1];
+    elBody := elRoot.child[1].use();
     assert( elBody <> nil );
     assert( elBody.tag = 'body' );
 

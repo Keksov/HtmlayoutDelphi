@@ -12,6 +12,8 @@ unit HtmlValueH;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses Windows, sysutils
     , HtmlDll
 ;

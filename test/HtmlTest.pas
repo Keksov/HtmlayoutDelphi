@@ -2,18 +2,20 @@ unit HtmlTest;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses classes, sysutils, forms, Controls, types, windows
     , HtmlCtrl
     , HtmlElement
     , HtmlTypes
     , HtmlLayoutDomH
     , HtmlBehaviorH
-    , HtmlTestEvents0
-    , HtmlTestEvents1
-    , HtmlTestEvents2
-    , HtmlTestEvents3
-    , HtmlTestEvents4
-    , HtmlTestMove
+//    , HtmlTestEvents0
+//    , HtmlTestEvents1
+//    , HtmlTestEvents2
+//    , HtmlTestEvents3
+//    , HtmlTestEvents4
+//    , HtmlTestMove
 ;
 
 implementation
@@ -213,23 +215,23 @@ INITIALIZATION
 
     rect := elBorder.location;
     elBorder.style[ 'position' ] := 'absolute';
-    elBorder.width  := 100;
-    assert( elBorder.width = 100 );
-    elBorder.height := 30;
-    assert( elBorder.height = 30 );
-    elBorder.left := rect.left + 30;
-    elBorder.top := rect.top - 5;
+    elBorder.pxWidth  := 100;
+    assert( elBorder.pxWidth = 100 );
+    elBorder.pxHeight := 30;
+    assert( elBorder.pxHeight = 30 );
+    elBorder.pxLeft := rect.left + 30;
+    elBorder.pxTop := rect.top - 5;
     elBorder.style[ 'border-width' ] := '1px';
     elBorder.style[ 'border-style' ] := 'solid';
     elBorder.style[ 'border-color' ] := 'red';
     elBorder.style[ 'background-color' ] := 'yellow';
     elBorder.update( REDRAW_NOW );
 
-    pt.x := elBorder.left + 1;
-    pt.y := elBorder.top + 1;
+    pt.x := elBorder.pxLeft + 1;
+    pt.y := elBorder.pxTop + 1;
     assert( elBorder.is_inside( pt ) );
 
-    pt.x := elBorder.left + elBorder.width + 2;
+    pt.x := elBorder.pxLeft + elBorder.pxWidth + 2;
     assert( not elBorder.is_inside( pt ) );
     //html.LoadFile( 'c:\projects\traffic_build\1.txt' );
 

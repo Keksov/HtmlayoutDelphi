@@ -6,11 +6,13 @@ unit HtmlCtrl;
 
   Delphi binding of HTMLayout published under LGPL. Visit https://github.com/Keksov/HtmlayoutDelphi
 
-  This file contains object wrapper for function from include\htmlayout.h of
-  Most accurate documentation could be found in include\htmlayout.h itself
+  This file contains object wrapper for functions from include\htmlayout.h
+  Most accurate documentation could be found in include\htmlayout.h by itself
 *)
 
 interface
+
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
 
 uses Windows, Messages, SysUtils, Classes, Controls
     , HtmlTypes
@@ -21,6 +23,7 @@ uses Windows, Messages, SysUtils, Classes, Controls
 ;
 
 type
+
     THtmlControl = class;
 
     THtmlCtrlCreateControl      = function( aSender : THtmlControl; aEventParams : PNMHL_CREATE_CONTROL ): LRESULT of object;
@@ -59,18 +62,31 @@ private
     procedure   setAnsiHtml( const aHtml : string );
 
 protected
-    procedure   CreateParams(var Params: TCreateParams); override;
-    procedure   WndProc(var Message: TMessage); override;
+    procedure   CreateParams( var Params : TCreateParams ); override;
+    procedure   WndProc( var Message : TMessage ); override;
+
+    function    doOnCreateControl( lParam : PNMHL_CREATE_CONTROL ) : LRESULT; virtual;
+    function    doOnLoadData( lParam : PNMHL_LOAD_DATA ) : LRESULT; virtual;
+    procedure   doOnControlCreated(); virtual;
+    function    doOnDataLoaded( lParam : PNMHL_DATA_LOADED ) : LRESULT; virtual;
+    procedure   doOnDocumentComplete(); virtual;
+    procedure   doOnUpdateUI(); virtual;
+    function    doOnDestroyControl( lParam : PNMHL_DESTROY_CONTROL ) : LRESULT; virtual;
+    function    doOnAttachBehavior( lParam : PNMHL_ATTACH_BEHAVIOR ) : LRESULT; virtual;
+    function    doOnBehaviorChanged( lParam : PNMHL_BEHAVIOR_CHANGED ) : LRESULT; virtual;
+    function    doOnDialogCreated() : LRESULT; virtual;
+    function    doOnDialogCloseRequest( lParam : PNMHL_DIALOG_CLOSE_RQ ) : LRESULT; virtual;
+    function    doOnDocumentLoaded() : LRESULT; virtual;
 
 public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create( AOwner : TComponent ); override;
 
     function    LoadHtml( const aHtml : string ) : boolean; overload;
     function    LoadHtml( const aHtml : widestring ) : boolean; overload;
     function    LoadHtmlEx( aHtml : string; aBaseUrl : widestring ) : boolean; overload;
     function    LoadHtmlEx( aHtml : widestring; aBaseUrl : widestring ) : boolean; overload;
-    function    SetMasterCSS( aUtf8CSS : string ) : boolean; overload;
-    function    AppendMasterCSS( aUtf8CSS : string ) : boolean; overload;
+class function  SetMasterCSS( aUtf8CSS : string ) : boolean; overload;
+class function  AppendMasterCSS( aUtf8CSS : string ) : boolean; overload;
     function    SetHttpHeaders( aHttpHeaders : string ) : boolean; overload;
     function    SetCSS( aUtf8CSS : string; aBaseUrl : PWideChar; aMediaType : PWideChar ) : boolean; overload;
 
@@ -90,20 +106,20 @@ public
     function    ClipboardCopy() : boolean;
     function    EnumResources( aCallback : HTMLAYOUT_CALLBACK_RES ) : cardinal;
     function    EnumResourcesEx( aCallback : HTMLAYOUT_CALLBACK_RES_EX; aCallbackParam : Pointer ) : cardinal;
-    function    SetMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean; overload;
-    function    AppendMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean; overload;
-    function    SetDataLoader( aDataLoader : HTMLAYOUT_DATA_LOADER ) : boolean;
-    function    DeclareElementType( aName : PCHAR; aElementModel : HTMLayoutElementModel ) : boolean;
+class function  SetMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean; overload;
+class function  AppendMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean; overload;
+class function  SetDataLoader( aDataLoader : HTMLAYOUT_DATA_LOADER ) : boolean;
+class function  DeclareElementType( aName : PCHAR; aElementModel : HTMLayoutElementModel ) : boolean;
     function    SetCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal; aBaseUrl : PWideChar; aMediaType : PWideChar ) : boolean; overload;
     function    SetMediaType( aMediaType : PWideChar ) : boolean;
     function    SetMediaVars( const aMediaVars : PHtmlVALUE ) : boolean;
     function    SetHttpHeaders( aHttpHeaders : PCHAR; aHttpHeadersLength : cardinal ) : boolean; overload;
     function    SetOption( aOption : HTMLayoutOptions; aValue : cardinal ) : boolean;
-    function    Render( aHBmp : HBITMAP; aArea : TRECT ) : boolean;
+    function    Render( aHBmp : HBITMAP; aDstRect : TRECT ) : boolean;
     function    UpdateWindow() : boolean;
     function    CommitUpdates() : boolean;
-    function    UrlEscape( aText : PWideChar; aSpaceToPlus : boolean; aBuffer : PCHAR; aBufferLength : cardinal ) : cardinal;
-    function    UrlUnescape( aUrl : PChar; aBuffer : PWideChar; aBufferLength : cardinal ) : cardinal;
+class function  UrlEscape( aText : PWideChar; aSpaceToPlus : boolean; aBuffer : PCHAR; aBufferLength : cardinal ) : cardinal;
+class function  UrlUnescape( aUrl : PChar; aBuffer : PWideChar; aBufferLength : cardinal ) : cardinal;
     function    Dialog( aPosition : TPoint; aAlignment : integer; aStyle : cardinal; aStyleEx : cardinal; aDialogCallback : HTMLayoutNotify;
                         aElCallback : HTMLayoutElementEventProc; aCallbackParam : Pointer; aHtml : PCHAR; aHtmlLength : cardinal ) : integer;
     procedure   SetupDebugOutput( aParam : Pointer; aPFOutput : HTMLAYOUT_DEBUG_OUTPUT_PROC );
@@ -114,7 +130,6 @@ public // property
 
     property html : string read getAnsiHtml write setAnsiHtml;
     property root : HELEMENT read GetRootElement;
-
 
 published
     property Action;
@@ -169,9 +184,57 @@ published
 
     end;
 
+    {***************************************************************************
+    * THtmlDOMControl
+    ***************************************************************************}
+    THtmlDOMControl = class( THtmlControl )
+protected
+    Fdom                        : THtmlElement;
+
+protected
+    procedure   doOnDocumentComplete(); override;
+
+public
+    destructor  Destroy(); override;
+    procedure   AfterConstruction(); override;
+
+public // property
+    property dom  : THtmlElement read Fdom;
+
+    end;
+
 implementation
 
-uses HtmlTest; // Just for testing
+//uses HtmlTest; // Just for testing
+//uses HtmlTestEvents2;
+
+{----------------------------- THtmlDOMControl --------------------------------}
+
+{*******************************************************************************
+* AfterConstruction
+*******************************************************************************}
+procedure THtmlDOMControl.AfterConstruction();
+begin
+    Fdom := THtmlElement.Create();
+end;
+
+{*******************************************************************************
+* Destroy
+*******************************************************************************}
+destructor THtmlDOMControl.Destroy();
+begin
+    Fdom.unuse();
+    inherited;
+end;
+
+{*******************************************************************************
+* doOnDocumentComplete
+*******************************************************************************}
+procedure THtmlDOMControl.doOnDocumentComplete();
+begin
+    inherited;
+    Fdom.handler := root;
+end;
 
 {----------------------------- THtmlControl -----------------------------------}
 
@@ -211,21 +274,170 @@ var
     res     : LRESULT;
 
 begin
-    res := HTMLayoutProcND( Handle, Message.Msg, Message.WParam, Message.LParam, Handled );
-    if Handled then
-    begin
-        Message.Result := res;
-        exit;
-    end;
-
-    case Message.Msg of
-    WM_CREATE:
+    try
+        res := HTMLayoutProcND( Handle, Message.Msg, Message.WParam, Message.LParam, Handled );
+        if Handled then
         begin
-            SetCallback( HtmlCallbackProxy, self );
+            Message.Result := res;
+            exit;
         end;
-    end;
 
-    inherited WndProc( Message );
+        case Message.Msg of
+        WM_CREATE:
+            begin
+                SetCallback( HtmlCallbackProxy, self );
+            end;
+        end;
+
+        inherited WndProc( Message );
+    except
+{        on e : Exception do
+        begin
+            if ( e <> nil ) then if ( e <> nil ) then;
+            if ( Message.Msg <> 0 ) then if ( Message.Msg <> 0 ) then;
+        end;}
+    end;
+end;
+
+{*******************************************************************************
+* doOnCreateControl
+*******************************************************************************}
+function THtmlControl.doOnCreateControl( lParam : PNMHL_CREATE_CONTROL ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnCreateControl ) then
+    begin
+        Result := FOnCreateControl( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnLoadData
+*******************************************************************************}
+function THtmlControl.doOnLoadData( lParam : PNMHL_LOAD_DATA ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnLoadData ) then
+    begin
+        Result := FOnLoadData( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnControlCreated
+*******************************************************************************}
+procedure THtmlControl.doOnControlCreated();
+begin
+    if Assigned( FOnControlCreated ) then
+    begin
+        FOnControlCreated( self );
+    end;
+end;
+
+{*******************************************************************************
+* doOnDataLoaded
+*******************************************************************************}
+function THtmlControl.doOnDataLoaded( lParam : PNMHL_DATA_LOADED ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnDataLoaded ) then
+    begin
+        Result := FOnDataLoaded( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnDocumentComplete
+*******************************************************************************}
+procedure THtmlControl.doOnDocumentComplete();
+begin
+    if Assigned( FOnDocumentComplete ) then
+    begin
+        FOnDocumentComplete( self );
+    end;
+end;
+
+{*******************************************************************************
+* doOnUpdateUI
+*******************************************************************************}
+procedure THtmlControl.doOnUpdateUI();
+begin
+    if Assigned( FOnUpdateUI ) then
+    begin
+        FOnUpdateUI( self );
+    end;
+end;
+
+{*******************************************************************************
+* doOnDestroyControl
+*******************************************************************************}
+function THtmlControl.doOnDestroyControl( lParam : PNMHL_DESTROY_CONTROL ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnDestroyControl ) then
+    begin
+        FOnDestroyControl( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnAttachBehavior
+*******************************************************************************}
+function THtmlControl.doOnAttachBehavior( lParam : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnAttachBehavior ) then
+    begin
+        Result := FOnAttachBehavior( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnBehaviorChanged
+*******************************************************************************}
+function THtmlControl.doOnBehaviorChanged( lParam : PNMHL_BEHAVIOR_CHANGED ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnBehaviorChanged ) then
+    begin
+        Result := FOnBehaviorChanged( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnDialogCreated
+*******************************************************************************}
+function THtmlControl.doOnDialogCreated() : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnDialogCreated ) then
+    begin
+        FOnDialogCreated( self );
+    end;
+end;
+
+{*******************************************************************************
+* doOnDialogCloseRequest
+*******************************************************************************}
+function THtmlControl.doOnDialogCloseRequest( lParam : PNMHL_DIALOG_CLOSE_RQ ) : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnDialogCloseRequest ) then
+    begin
+        FOnDialogCloseRequest( self, lParam );
+    end;
+end;
+
+{*******************************************************************************
+* doOnDocumentLoaded
+*******************************************************************************}
+function THtmlControl.doOnDocumentLoaded() : LRESULT;
+begin
+    Result := 0;
+    if Assigned( FOnDocumentLoaded ) then
+    begin
+        FOnDocumentLoaded( self );
+    end;
 end;
 
 {*******************************************************************************
@@ -237,65 +449,29 @@ begin
 
     case PNMHDR( lParam ).code of
     HLN_CREATE_CONTROL :
-        if Assigned( FOnCreateControl ) then
-        begin
-            FOnCreateControl( self, PNMHL_CREATE_CONTROL( lParam ) );
-        end;
+        Result := doOnCreateControl( PNMHL_CREATE_CONTROL( lParam ) );
     HLN_LOAD_DATA:
-        if Assigned( FOnLoadData ) then
-        begin
-            Result := FOnLoadData( self, PNMHL_LOAD_DATA( lParam ) );
-        end;
+        Result := doOnLoadData( PNMHL_LOAD_DATA( lParam ) );
     HLN_CONTROL_CREATED :
-        if Assigned( FOnControlCreated ) then
-        begin
-            FOnControlCreated( self );
-        end;
+        doOnControlCreated();
     HLN_DATA_LOADED :
-        if Assigned( FOnDataLoaded ) then
-        begin
-            FOnDataLoaded( self, PNMHL_DATA_LOADED( lParam ) );
-        end;
+        Result := doOnDataLoaded( PNMHL_DATA_LOADED( lParam ) );
     HLN_DOCUMENT_COMPLETE :
-        if Assigned( FOnDocumentComplete ) then
-        begin
-            FOnDocumentComplete( self );
-        end;
+        doOnDocumentComplete();
     HLN_UPDATE_UI :
-        if Assigned( FOnUpdateUI ) then
-        begin
-            FOnUpdateUI( self );
-        end;
+        doOnUpdateUI();
     HLN_DESTROY_CONTROL :
-        if Assigned( FOnDestroyControl ) then
-        begin
-            FOnDestroyControl( self, PNMHL_DESTROY_CONTROL( lParam ) );
-        end;
+        Result := doOnDestroyControl( PNMHL_DESTROY_CONTROL( lParam ) );
     HLN_ATTACH_BEHAVIOR :
-        if Assigned( FOnAttachBehavior ) then
-        begin
-            FOnAttachBehavior( self, PNMHL_ATTACH_BEHAVIOR( lParam ) );
-        end;
+        Result := doOnAttachBehavior( PNMHL_ATTACH_BEHAVIOR( lParam ) );
     HLN_BEHAVIOR_CHANGED :
-        if Assigned( FOnBehaviorChanged ) then
-        begin
-            FOnBehaviorChanged( self, PNMHL_BEHAVIOR_CHANGED( lParam ) );
-        end;
+        Result := doOnBehaviorChanged( PNMHL_BEHAVIOR_CHANGED( lParam ) );
     HLN_DIALOG_CREATED :
-        if Assigned( FOnDialogCreated ) then
-        begin
-            FOnDialogCreated( self );
-        end;
+        Result := doOnDialogCreated();
     HLN_DIALOG_CLOSE_RQ :
-        if Assigned( FOnDialogCloseRequest ) then
-        begin
-            FOnDialogCloseRequest( self, PNMHL_DIALOG_CLOSE_RQ( lParam ) );
-        end;
+        Result := doOnDialogCloseRequest( PNMHL_DIALOG_CLOSE_RQ( lParam ) );
     HLN_DOCUMENT_LOADED :
-        if Assigned( FOnDocumentLoaded ) then
-        begin
-            FOnDocumentLoaded( self );
-        end;
+        Result := doOnDocumentLoaded();
     end;
 end;
 
@@ -370,17 +546,17 @@ begin
 end;
 
 {*******************************************************************************
-*
+* SetMasterCSS
 *******************************************************************************}
-function THtmlControl.SetMasterCSS( aUtf8CSS : string ) : boolean;
+class function THtmlControl.SetMasterCSS( aUtf8CSS : string ) : boolean;
 begin
     Result := SetMasterCSS( PCHAR( aUtf8CSS ), Length( aUtf8CSS ) );
 end;
 
 {*******************************************************************************
-*
+* AppendMasterCSS
 *******************************************************************************}
-function THtmlControl.AppendMasterCSS( aUtf8CSS : string ) : boolean;
+class function THtmlControl.AppendMasterCSS( aUtf8CSS : string ) : boolean;
 begin
     Result := AppendMasterCSS( PCHAR( aUtf8CSS ), Length( aUtf8CSS ) );
 end;
@@ -524,7 +700,7 @@ end;
 {*******************************************************************************
 * SetMasterCSS
 *******************************************************************************}
-function THtmlControl.SetMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean;
+class function THtmlControl.SetMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean;
 begin
     Result := HTMLayoutSetMasterCSS( aUtf8CSS, aCSSLength );
 end;
@@ -532,7 +708,7 @@ end;
 {*******************************************************************************
 * AppendMasterCSS
 *******************************************************************************}
-function THtmlControl.AppendMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean;
+class function THtmlControl.AppendMasterCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal ) : boolean;
 begin
     Result := HTMLayoutAppendMasterCSS( aUtf8CSS, aCSSLength );
 end;
@@ -540,7 +716,7 @@ end;
 {*******************************************************************************
 * SetDataLoader
 *******************************************************************************}
-function THtmlControl.SetDataLoader( aDataLoader : HTMLAYOUT_DATA_LOADER ) : boolean;
+class function THtmlControl.SetDataLoader( aDataLoader : HTMLAYOUT_DATA_LOADER ) : boolean;
 begin
     Result := HTMLayoutSetDataLoader( aDataLoader );
 end;
@@ -548,7 +724,7 @@ end;
 {*******************************************************************************
 * DeclareElementType
 *******************************************************************************}
-function THtmlControl.DeclareElementType( aName : PCHAR; aElementModel : HTMLayoutElementModel ) : boolean;
+class function THtmlControl.DeclareElementType( aName : PCHAR; aElementModel : HTMLayoutElementModel ) : boolean;
 begin
     Result := HTMLayoutDeclareElementType( aName, UINT( aElementModel ) );
 end;
@@ -596,9 +772,9 @@ end;
 {*******************************************************************************
 * Render
 *******************************************************************************}
-function THtmlControl.Render( aHBmp : HBITMAP; aArea : TRECT ) : boolean;
+function THtmlControl.Render( aHBmp : HBITMAP; aDstRect : TRECT ) : boolean;
 begin
-    Result := HTMLayoutRender( Handle, aHBmp, aArea );
+    Result := HTMLayoutRender( Handle, aHBmp, aDstRect );
 end;
 
 {*******************************************************************************
@@ -620,7 +796,7 @@ end;
 {*******************************************************************************
 * UrlEscape
 *******************************************************************************}
-function THtmlControl.UrlEscape( aText : PWideChar; aSpaceToPlus : boolean; aBuffer : PCHAR; aBufferLength : cardinal ) : cardinal;
+class function THtmlControl.UrlEscape( aText : PWideChar; aSpaceToPlus : boolean; aBuffer : PCHAR; aBufferLength : cardinal ) : cardinal;
 begin
     Result := HTMLayoutUrlEscape( aText, aSpaceToPlus, aBuffer, aBufferLength );
 end;
@@ -628,7 +804,7 @@ end;
 {*******************************************************************************
 * UrlUnescape
 *******************************************************************************}
-function THtmlControl.UrlUnescape( aUrl : PChar; aBuffer : PWideChar; aBufferLength : cardinal ) : cardinal;
+class function THtmlControl.UrlUnescape( aUrl : PChar; aBuffer : PWideChar; aBufferLength : cardinal ) : cardinal;
 begin
     Result := HTMLayoutUrlUnescape( aUrl, aBuffer, aBufferLength );
 end;

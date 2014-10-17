@@ -9,6 +9,8 @@ unit HtmlTypes;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses Windows;
 
 type

@@ -11,6 +11,8 @@ unit HtmlEvents;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses Windows
     , HtmlTypes
     , HtmlBehaviorH
@@ -193,6 +195,24 @@ protected
     function    call( aEventGroup : UINT; aEventParams : Pointer ) : boolean; override;
     end;
 
+{----------------------------- HANDLE_BEHAVIOR --------------------------------}
+
+    {***************************************************************************
+    * THtmlBehaviorEvent
+    ***************************************************************************}
+    THtmlBehaviorEvent = class( THtmlCmdEventParams )
+protected
+    function    call( aEventGroup : UINT; aEventParams : Pointer ) : boolean; override;
+    end;
+
+    {***************************************************************************
+    * THtmlBehaviorCmd
+    ***************************************************************************}
+    THtmlBehaviorCmd = class( THtmlBehaviorEvent )
+protected
+    function    call( aEventGroup : UINT; aEventParams : Pointer ) : boolean; override;
+    end;
+
 implementation
 
 {---------------------------- HANDLE_INITIALIZATION ---------------------------}
@@ -217,9 +237,24 @@ begin
 end;
 
 function THtmlMouseCmd.call( aEventGroup : UINT; aEventParams : Pointer ) : boolean;
+//var
+//    cmd : HTMLayoutMouseCmd;
 begin
     assert( aEventParams <> nil );
     Result := ( PHTMLayoutMouseParams( aEventParams ).cmd = Fcmd );
+
+    {cmd := THTMLayoutEvent.mouseCmd( PHTMLayoutMouseParams( aEventParams ) );
+    if ( cmd.code = MOUSE_DOWN ) then
+    begin
+        //THtmlShim.get( PHTMLayoutMouseParams( aEventParams ).target ).set_capture();
+    end
+    else if ( cmd.code = MOUSE_UP ) then
+    begin
+        //THtmlShim.get( PHTMLayoutMouseParams( aEventParams ).target ).release_capture();
+    end;
+    //Result := ( cmd.code = Fcmd );
+    }
+
     Result := Result and inherited call( aEventGroup, aEventParams );
 end;
 
@@ -334,6 +369,21 @@ function THtmlGestureCmd.call( aEventGroup : UINT; aEventParams : Pointer ) : bo
 begin
     assert( aEventParams <> nil );
     Result := ( PHTMLayoutGestureParams( aEventParams ).cmd = Fcmd );
+    Result := Result and inherited call( aEventGroup, aEventParams );
+end;
+
+{------------------------------ HANDLE_BEHAVIOR -------------------------------}
+
+function THtmlBehaviorEvent.call( aEventGroup : UINT; aEventParams : Pointer ) : boolean;
+begin
+    assert( aEventGroup = HANDLE_BEHAVIOR_EVENT );
+    Result := HTMLElementBehaviorEventHandler( Fcallback )( Felement, PHTMLayoutBehaviorEventParams( aEventParams ), Ftag );
+end;
+
+function THtmlBehaviorCmd.call( aEventGroup : UINT; aEventParams : Pointer ) : boolean;
+begin
+    assert( aEventParams <> nil );
+    Result := ( PHTMLayoutBehaviorEventParams( aEventParams ).cmd = Fcmd );
     Result := Result and inherited call( aEventGroup, aEventParams );
 end;
 

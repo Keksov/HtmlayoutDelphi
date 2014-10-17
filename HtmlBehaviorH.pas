@@ -12,6 +12,8 @@ unit HtmlBehaviorH;
 
 interface
 
+{$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
+
 uses Windows
     , HtmlTypes
 ;
@@ -54,12 +56,16 @@ const
     SHIFT_KEY_PRESSED           = $2;
     ALT_KEY_PRESSED             = $4;
 
+{-- INITIALIZATION ------------------------------------------------------------}
+
     // parameters of evtg == HANDLE_INITIALIZATION
 
     // enum INITIALIZATION_EVENTS
     INITIALIZATION_ALL          = ALL_CMD; // Delphi specific constant
     BEHAVIOR_DETACH             = 0;
     BEHAVIOR_ATTACH             = 1;
+
+{-- MOUSE ---------------------------------------------------------------------}
 
     //enum DRAGGING_TYPE
     NO_DRAGGING                 = 0;
@@ -106,6 +112,8 @@ const
     CURSOR_DRAG_MOVE            = 14;
     CURSOR_DRAG_COPY            = 15;
 
+{-- KEY -----------------------------------------------------------------------}
+
     // parameters of evtg == HANDLE_KEY
 
     // enum KEY_EVENTS
@@ -114,6 +122,7 @@ const
     KEY_UP                      = 1;
     KEY_CHAR                    = 2;
 
+{-- FOCUS ---------------------------------------------------------------------}
 
     // parameters of evtg == HANDLE_FOCUS
 
@@ -141,6 +150,8 @@ const
     BY_KEY_NEXT                 = 2;
     BY_KEY_PREV                 = 3;
 
+{-- SCROLL --------------------------------------------------------------------}
+
     // parameters of evtg == HANDLE_SCROLL
 
     // enum SCROLL_EVENTS
@@ -153,6 +164,10 @@ const
     SCROLL_PAGE_MINUS           = 5;
     SCROLL_POS                  = 6;
     SCROLL_SLIDER_RELEASED      = 7;
+
+{-- GESTURE -------------------------------------------------------------------}
+
+    // Gesture events
 
     // enum GESTURE_CMD
     GESTURE_ALL                 = ALL_CMD; // Delphi specific constant
@@ -179,11 +194,16 @@ const
     GESTURE_FLAG_PAN_WITH_INERTIA = $8000; //
     GESTURE_FLAGS_ALL             = $FFFF; //
 
+{-- DRAW ----------------------------------------------------------------------}
+
     // Draw events
+
     DRAW_ALL                    = ALL_CMD; // Delphi specific constant
     DRAW_BACKGROUND             = 0;
     DRAW_CONTENT                = 1;
     DRAW_FOREGROUND             = 2;
+
+{-- EXCHANGE ------------------------------------------------------------------}
 
     // Exchange events
 
@@ -222,7 +242,97 @@ const
     // identifiers of methods currently supported by intrinsic behaviors,
     // see function HTMLayoutCallMethod
 
+{-- BEHAVIOR ------------------------------------------------------------------}
+
+    // enum BEHAVIOR_EVENTS, HTMLayoutBehaviorEvents
     BEHAVIOR_ALL                = ALL_CMD; // Delphi specific constant
+
+    BUTTON_CLICK                = 0; // click on button
+    BUTTON_PRESS                = 1; // mouse down or key down in button
+    BUTTON_STATE_CHANGED        = 2; // checkbox/radio/slider changed its state/value
+    EDIT_VALUE_CHANGING         = 3; // before text change
+    EDIT_VALUE_CHANGED          = 4; // after text change
+    SELECT_SELECTION_CHANGED    = 5;  // selection in <select> changed
+    SELECT_STATE_CHANGED        = 6; // node in select expanded/collapsed, heTarget is the node
+
+    POPUP_REQUEST               = 7; // request to show popup just received, here DOM of popup element can be modifed.
+    POPUP_READY                 = 8; // popup element has been measured and ready to be shown on screen, here you can use functions like ScrollToView.
+    POPUP_DISMISSED             = 9; // popup element is closed, here DOM of popup element can be modifed again - e.g. some items can be removed to free memory.
+
+    MENU_ITEM_ACTIVE            = $A; // menu item activated by mouse hover or by keyboard,
+    MENU_ITEM_CLICK             = $B; // menu item click,
+                                      //   BEHAVIOR_EVENT_PARAMS structure layout
+                                      //   BEHAVIOR_EVENT_PARAMS.cmd - MENU_ITEM_CLICK/MENU_ITEM_ACTIVE
+                                      //   BEHAVIOR_EVENT_PARAMS.heTarget - the menu item, presumably <li> element
+                                      //   BEHAVIOR_EVENT_PARAMS.reason - BY_MOUSE_CLICK | BY_KEY_CLICK
+
+    CONTEXT_MENU_SETUP          = $F;   // evt.he is a menu dom element that is about to be shown. You can disable/enable items in it.
+    CONTEXT_MENU_REQUEST        = $10; // "right-click", BEHAVIOR_EVENT_PARAMS::he is current popup menu HELEMENT being processed or NULL.
+                                       // application can provide its own HELEMENT here (if it is NULL) or modify current menu element.
+
+    VISIUAL_STATUS_CHANGED      = $11; // broadcast notification, sent to all elements of some container being shown or hidden
+    DISABLED_STATUS_CHANGED     = $12; // broadcast notification, sent to all elements of some container that got new value of :disabled state
+
+    POPUP_DISMISSING            = $13; // popup is about to be closed
+
+    // "grey" event codes  - notfications from behaviors from this SDK
+    HYPERLINK_CLICK             = $80; // hyperlink click
+    TABLE_HEADER_CLICK          = $81; // click on some cell in table header,
+                                       //     target = the cell,
+                                       //     reason = index of the cell (column number, 0..n)
+    TABLE_ROW_CLICK             = $82; // click on data row in the table, target is the row
+                                       //     target = the row,
+                                       //     reason = index of the row (fixed_rows..n)
+    TABLE_ROW_DBL_CLICK         = $83; // mouse dbl click on data row in the table, target is the row
+                                       //     target = the row,
+                                       //     reason = index of the row (fixed_rows..n)
+
+    ELEMENT_COLLAPSED           = $90; // element was collapsed, so far only behavior:tabs is sending these two to the panels
+    ELEMENT_EXPANDED            = $91; // element was expanded,
+
+    ACTIVATE_CHILD              = $92; // activate (select) child,
+                                       // used for example by accesskeys behaviors to send activation request, e.g. tab on behavior:tabs.
+
+    DO_SWITCH_TAB               = ACTIVATE_CHILD; // command to switch tab programmatically, handled by behavior:tabs
+                                                  // use it as HTMLayoutPostEvent(tabsElementOrItsChild, DO_SWITCH_TAB, tabElementToShow, 0);
+
+    INIT_DATA_VIEW              = $93; // request to virtual grid to initialize its view
+
+    ROWS_DATA_REQUEST           = $94; // request from virtual grid to data source behavior to fill data in the table
+                                       // parameters passed throug DATA_ROWS_PARAMS structure.
+
+    UI_STATE_CHANGED            = $95; // ui state changed, observers shall update their visual states.
+                                       // is sent for example by behavior:richtext when caret position/selection has changed.
+
+    FORM_SUBMIT                 = $96; // behavior:form detected submission event. BEHAVIOR_EVENT_PARAMS::data field contains data to be posted.
+                                       // BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about
+                                       // to be submitted. You can modify the data or discard submission by returning TRUE from the handler.
+
+    FORM_RESET                  = $97; // behavior:form detected reset event (from button type=reset). BEHAVIOR_EVENT_PARAMS::data field contains data to be reset.
+                                       // BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about
+                                       // to be rest. You can modify the data or discard reset by returning TRUE from the handler.
+
+    DOCUMENT_COMPLETE           = $98; // behavior:frame have complete document.
+
+    HISTORY_PUSH                = $99; // behavior:history stuff
+    HISTORY_DROP                = $9A;
+    HISTORY_PRIOR               = $9B;
+    HISTORY_NEXT                = $9C;
+
+    HISTORY_STATE_CHANGED       = $9D; // behavior:history notification - history stack has changed
+
+    CLOSE_POPUP                 = $9E; // close popup request,
+    REQUEST_TOOLTIP             = $9F; // request tooltip, BEHAVIOR_EVENT_PARAMS.he <- is the tooltip element.
+
+    ANIMATION                   = $A0; // animation started (reason=1) or ended(reason=0) on the element.
+
+    FIRST_APPLICATION_EVENT_CODE = $100;
+    // all custom event codes shall be greater
+    // than this number. All codes below this will be used
+    // solely by application - HTMLayout will not intrepret it
+    // and will do just dispatching.
+    // To send event notifications with  these codes use
+    // HTMLayoutSend/PostEvent API.
 
     // enum BEHAVIOR_METHOD_IDENTIFIERS
     DO_CLICK                    = 0;
@@ -277,6 +387,8 @@ type
     end;
     PHTMLayoutInitializationParams = ^HTMLayoutInitializationParams;
 
+{-- MOUSE ---------------------------------------------------------------------}
+
     //struct MOUSE_PARAMS
     HTMLayoutMouseParams = record
         cmd                     : UINT; // MOUSE_EVENTS
@@ -306,6 +418,8 @@ type
         );
     end;
 
+{-- KEY -----------------------------------------------------------------------}
+
     // struct KEY_PARAMS
     HTMLayoutKeyParams = record
         cmd                     : UINT; // KEY_EVENTS
@@ -314,6 +428,8 @@ type
         alt_state               : UINT; // KEYBOARD_STATES
     end;
     PHTMLayoutKeyParams = ^HTMLayoutKeyParams;
+
+{-- FOCUS ---------------------------------------------------------------------}
 
     // struct FOCUS_PARAMS
     HTMLayoutFocusParams = record
@@ -324,14 +440,17 @@ type
     end;
     PHTMLayoutFocusParams = ^HTMLayoutFocusParams;
 
+{-- SCROLL --------------------------------------------------------------------}
+
     // struct SCROLL_PARAMS
-    HTMLayoutScrollParams = record
-        cmd                     : UINT; // SCROLL_EVENTS
+    HTMLayoutScrollParams = record        cmd                     : UINT; // SCROLL_EVENTS
         target                  : HELEMENT; // target element
         pos                     : integer; // scroll position if SCROLL_POS
         vertical                : BOOL; // TRUE if from vertical scrollbar
     end;
     PHTMLayoutScrollParams = ^HTMLayoutScrollParams;
+
+{-- GESTURE -------------------------------------------------------------------}
 
     // struct GESTURE_PARAMS
     HTMLayoutGestureParams = record
@@ -346,14 +465,18 @@ type
     end;
     PHTMLayoutGestureParams = ^HTMLayoutGestureParams;
 
+{-- DRAW ----------------------------------------------------------------------}
+
     // Use ::GetTextColor(hdc) to get current text color of the element while drawing
     HTMLayoutDrawParams = record
         cmd                     : UINT; // DRAW_EVENTS
         hdc                     : HDC; // hdc to paint on
-        area                    : TRECT; // element area to paint,
-        reserved                : UINT; //   for DRAW_BACKGROUND/DRAW_FOREGROUND - it is a border box, for DRAW_CONTENT - it is a content box
+        area                    : TRECT; // element area to paint, for DRAW_BACKGROUND/DRAW_FOREGROUND - it is a border box, for DRAW_CONTENT - it is a content box
+        reserved                : UINT; //
     end;
     PHTMLayoutDrawParams = ^HTMLayoutDrawParams;
+
+{-- EXCHANGE ------------------------------------------------------------------}
 
     //struct EXCHANGE_PARAMS;
     PHTMLayoutExchangeParams = ^HTMLayoutExchangeParams;
@@ -371,95 +494,7 @@ type
         fetch_data              : HTMLayoutFetchExchangeDataCallback; // function to fetch the data of desired type.
     end;
 
-    // enum BEHAVIOR_EVENTS
-    HTMLayoutBehaviorEvents = (
-        BUTTON_CLICK            = 0, // click on button
-        BUTTON_PRESS            = 1, // mouse down or key down in button
-        BUTTON_STATE_CHANGED    = 2, // checkbox/radio/slider changed its state/value
-        EDIT_VALUE_CHANGING     = 3, // before text change
-        EDIT_VALUE_CHANGED      = 4, // after text change
-        SELECT_SELECTION_CHANGED = 5,  // selection in <select> changed
-        SELECT_STATE_CHANGED    = 6, // node in select expanded/collapsed, heTarget is the node
-
-        POPUP_REQUEST           = 7, // request to show popup just received, here DOM of popup element can be modifed.
-        POPUP_READY             = 8, // popup element has been measured and ready to be shown on screen, here you can use functions like ScrollToView.
-        POPUP_DISMISSED         = 9, // popup element is closed, here DOM of popup element can be modifed again - e.g. some items can be removed to free memory.
-
-        MENU_ITEM_ACTIVE        = $A, // menu item activated by mouse hover or by keyboard,
-        MENU_ITEM_CLICK         = $B, // menu item click,
-                                       //   BEHAVIOR_EVENT_PARAMS structure layout
-                                       //   BEHAVIOR_EVENT_PARAMS.cmd - MENU_ITEM_CLICK/MENU_ITEM_ACTIVE
-                                       //   BEHAVIOR_EVENT_PARAMS.heTarget - the menu item, presumably <li> element
-                                       //   BEHAVIOR_EVENT_PARAMS.reason - BY_MOUSE_CLICK | BY_KEY_CLICK
-
-        CONTEXT_MENU_SETUP      = $F, // evt.he is a menu dom element that is about to be shown. You can disable/enable items in it.
-        CONTEXT_MENU_REQUEST    = $10, // "right-click", BEHAVIOR_EVENT_PARAMS::he is current popup menu HELEMENT being processed or NULL.
-                                       // application can provide its own HELEMENT here (if it is NULL) or modify current menu element.
-
-        VISIUAL_STATUS_CHANGED  = $11, // broadcast notification, sent to all elements of some container being shown or hidden
-        DISABLED_STATUS_CHANGED = $12, // broadcast notification, sent to all elements of some container that got new value of :disabled state
-
-        POPUP_DISMISSING        = $13, // popup is about to be closed
-
-        // "grey" event codes  - notfications from behaviors from this SDK
-        HYPERLINK_CLICK         = $80, // hyperlink click
-        TABLE_HEADER_CLICK      = $81, // click on some cell in table header,
-                                       //     target = the cell,
-                                       //     reason = index of the cell (column number, 0..n)
-        TABLE_ROW_CLICK         = $82, // click on data row in the table, target is the row
-                                       //     target = the row,
-                                       //     reason = index of the row (fixed_rows..n)
-        TABLE_ROW_DBL_CLICK     = $83, // mouse dbl click on data row in the table, target is the row
-                                       //     target = the row,
-                                       //     reason = index of the row (fixed_rows..n)
-
-        ELEMENT_COLLAPSED       = $90, // element was collapsed, so far only behavior:tabs is sending these two to the panels
-        ELEMENT_EXPANDED        = $91, // element was expanded,
-
-        ACTIVATE_CHILD          = $92, // activate (select) child,
-                                       // used for example by accesskeys behaviors to send activation request, e.g. tab on behavior:tabs.
-
-        DO_SWITCH_TAB           = ACTIVATE_CHILD, // command to switch tab programmatically, handled by behavior:tabs
-                                     // use it as HTMLayoutPostEvent(tabsElementOrItsChild, DO_SWITCH_TAB, tabElementToShow, 0);
-
-        INIT_DATA_VIEW,                // request to virtual grid to initialize its view
-
-        ROWS_DATA_REQUEST,             // request from virtual grid to data source behavior to fill data in the table
-                                     // parameters passed throug DATA_ROWS_PARAMS structure.
-
-        UI_STATE_CHANGED,              // ui state changed, observers shall update their visual states.
-                                     // is sent for example by behavior:richtext when caret position/selection has changed.
-
-        FORM_SUBMIT,                   // behavior:form detected submission event. BEHAVIOR_EVENT_PARAMS::data field contains data to be posted.
-                                     // BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about
-                                     // to be submitted. You can modify the data or discard submission by returning TRUE from the handler.
-        FORM_RESET,                    // behavior:form detected reset event (from button type=reset). BEHAVIOR_EVENT_PARAMS::data field contains data to be reset.
-                                     // BEHAVIOR_EVENT_PARAMS::data is of type T_MAP in this case key/value pairs of data that is about
-                                     // to be rest. You can modify the data or discard reset by returning TRUE from the handler.
-
-        DOCUMENT_COMPLETE,             // behavior:frame have complete document.
-
-        HISTORY_PUSH,                  // behavior:history stuff
-        HISTORY_DROP,
-        HISTORY_PRIOR,
-        HISTORY_NEXT,
-
-        HISTORY_STATE_CHANGED,         // behavior:history notification - history stack has changed
-
-        CLOSE_POPUP,                   // close popup request,
-        REQUEST_TOOLTIP,               // request tooltip, BEHAVIOR_EVENT_PARAMS.he <- is the tooltip element.
-
-        ANIMATION               = $A0, // animation started (reason=1) or ended(reason=0) on the element.
-
-
-        FIRST_APPLICATION_EVENT_CODE = $100
-        // all custom event codes shall be greater
-        // than this number. All codes below this will be used
-        // solely by application - HTMLayout will not intrepret it
-        // and will do just dispatching.
-        // To send event notifications with  these codes use
-        // HTMLayoutSend/PostEvent API.
-    );
+{-- BEHAVIOR ------------------------------------------------------------------}
 
     // struct BEHAVIOR_EVENT_PARAMS
     HTMLayoutBehaviorEventParams = record
@@ -470,6 +505,8 @@ type
         data                    : POINTER; // JSON_VALUE; // auxiliary data accompanied with the event. E.g. FORM_SUBMIT event is using this field to pass collection of values.
     end;
     PHTMLayoutBehaviorEventParams = ^HTMLayoutBehaviorEventParams;
+
+{-- TIMER ---------------------------------------------------------------------}
 
     // struct TIMER_PARAMS
     HTMLayoutTimerParams = record
@@ -485,6 +522,8 @@ type
     PHTMLayoutMethodParams = ^HTMLayoutMethodParams;
 
     // see HTMLayoutRequestElementData
+
+{-- DATA_ARRIVED --------------------------------------------------------------}
 
     // struct DATA_ARRIVED_PARAMS
     HTMLayoutDataArrivedParams = record
