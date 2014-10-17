@@ -1,0 +1,43 @@
+package DirectX9;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS OFF}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'DirectX 9 Headers'}
+{$IMPLICITBUILD OFF}
+{$DEFINE DYNAMIC_LINK_ALL}
+{%File 'DirectX.inc'}
+{%File 'Jedi.inc'}
+
+requires
+  rtl;
+
+contains
+  Direct3D9 in 'Direct3D9.pas',
+  DirectDraw in 'DirectDraw.pas',
+  DirectShow9 in 'DirectShow9.pas',
+  DirectSound in 'DirectSound.pas',
+  DXFile in 'DXFile.pas',
+  WMF9 in 'WMF9.pas',
+  DXTypes in 'DXTypes.pas';
+
+end.

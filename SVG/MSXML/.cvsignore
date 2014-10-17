@@ -1,0 +1,16 @@
+*.~*
+*.obj
+*.vco
+*.vcl
+*.vcb
+*.tlb
+*.plg
+*.opt
+*.ncb
+*.mk
+*.bak
+*.aps
+#.*
+.#*
+*.dcu
+*.hpp
