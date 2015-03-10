@@ -21,6 +21,42 @@ uses Windows
 
 type
 
+    TArrayHTMLElementInitializationEventHandler = array of HTMLElementInitializationEventHandler;
+    PArrayHTMLElementInitializationEventHandler = ^TArrayHTMLElementInitializationEventHandler;
+
+    TArrayHTMLElementMouseEventHandler = array of HTMLElementMouseEventHandler;
+    PArrayHTMLElementMouseEventHandler = ^TArrayHTMLElementMouseEventHandler;
+
+    TArrayHTMLElementKeyEventHandler = array of HTMLElementKeyEventHandler;
+    PArrayHTMLElementKeyEventHandler = ^TArrayHTMLElementKeyEventHandler;
+
+    TArrayHTMLElementFocusEventHandler = array of HTMLElementFocusEventHandler;
+    PArrayHTMLElementFocusEventHandler = ^TArrayHTMLElementFocusEventHandler;
+
+    TArrayHTMLElementScrollEventHandler = array of HTMLElementScrollEventHandler;
+    PArrayHTMLElementScrollEventHandler = ^TArrayHTMLElementScrollEventHandler;
+
+    TArrayHTMLElementTimerEventHandler = array of HTMLElementTimerEventHandler;
+    PArrayHTMLElementTimerEventHandler = ^TArrayHTMLElementTimerEventHandler;
+
+    TArrayHTMLElementSizeEventHandler = array of HTMLElementSizeEventHandler;
+    PArrayHTMLElementSizeEventHandler = ^TArrayHTMLElementSizeEventHandler;
+
+    TArrayHTMLElementDrawEventHandler = array of HTMLElementDrawEventHandler;
+    PArrayHTMLElementDrawEventHandler = ^TArrayHTMLElementDrawEventHandler;
+
+    TArrayHTMLElementDataArrivedEventHandler = array of HTMLElementDataArrivedEventHandler;
+    PArrayHTMLElementDataArrivedEventHandler = ^TArrayHTMLElementDataArrivedEventHandler;
+
+    TArrayHTMLElementExchangeEventHandler = array of HTMLElementExchangeEventHandler;
+    PArrayHTMLElementExchangeEventHandler = ^TArrayHTMLElementExchangeEventHandler;
+
+    TArrayHTMLElementGestureEventHandler = array of HTMLElementGestureEventHandler;
+    PArrayHTMLElementGestureEventHandler = ^TArrayHTMLElementGestureEventHandler;
+
+    TArrayHTMLElementBehaviorEventHandler = array of HTMLElementBehaviorEventHandler;
+    PArrayHTMLElementBehaviorEventHandler = ^TArrayHTMLElementBehaviorEventHandler;
+
 {---------------------------- HANDLE_INITIALIZATION ---------------------------}
 
     {***************************************************************************

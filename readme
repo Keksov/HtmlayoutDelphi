@@ -14,10 +14,34 @@ Created with HTMLayout SDK v 3.3.3.13
 All functions from layout.h and layout_dom.h are imported. Several DOM object wrappers were introduced.
 Download SDK from official site http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 For getting help on HTMLayout itself please visit forum at http://www.terrainformatica.com/forum/list.php?3 
-If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help, especially this topic 
-http://www.rsdn.ru/forum/htmlayout/2231219.flat#2231219
+If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help, especially these topics
+1. http://www.rsdn.ru/forum/htmlayout/2231219.flat#2231219
+2. http://rsdn.ru/forum/htmlayout/2231384.1
 
-I'll not answer general questions on HTMLayout usage, but feel free to contact me concerning Delphi code.
+* Built-in behaviors:
+http://www.terrainformatica.com/htmlayout/behaviors.whtm
+http://www.terrainformatica.com/wiki/h-smile/built-in-behaviors/start
+
+* List of entities (HTML tags) HTMLayout knows about:
+http://www.terrainformatica.com/htmlayout/tagsattributes.whtm
+
+* HTMLayout specific tags:
+http://www.terrainformatica.com/htmlayout/tags.whtm
+
+* CSS Selectors in HTMLayout
+http://www.terrainformatica.com/htmlayout/selectors.whtm
+
+*CSS transition docs
+<SDK folder>/html_samples/transitions/!transition-doc.htm
+<SDK folder>/html_samples/transitions/easing-functions.htm
+
+* csss!
+http://www.terrainformatica.com/htmlayout/csss!.whtm
+http://www.terrainformatica.com/htmlayout/csss!-events.htm
+http://www.terrainformatica.com/htmlayout/csss!-dom-object.htm
+
+I'll not answer general questions about HTMLayout usage, but feel free to contact me concerning Delphi code.
+Please download HTMLayout SDK, run bin/browse.exe or bin64/win64.exe and take a look at the set of examples under the 'html_samples' subdir.
 
 Usage
 =====

@@ -15,10 +15,15 @@ interface
 {$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
 
 uses Windows, sysutils
-    , HtmlDll
 ;
 
 type
+
+{
+Data structures and functions described in this file are used for handling second argument used by these two functions:
+    function  HTMLayoutControlGetValue( he : HELEMENT; var pVal : HtmlValue ) : HLDOM_RESULT; stdcall;
+    function  HTMLayoutControlSetValue( he : HELEMENT; const pVal : PHtmlValue ) : HLDOM_RESULT; stdcall;
+}
 
     //enum VALUE_RESULT
     VALUE_RESULT = (
@@ -28,12 +33,12 @@ type
         HV_INCOMPATIBLE_TYPE    = 2
     );
 
-    HtmlVALUE = record
+    RHtmlValue = record
         t                       : UINT;
         u                       : UINT;
         d                       : UINT64;
     end;
-    PHtmlVALUE = ^HtmlVALUE; 
+    PRHtmlValue = ^RHtmlValue;
 
     LPCBYTES = PChar;
     FLOAT_VALUE = double;
@@ -86,6 +91,64 @@ type
         DT_UTC                  = $10 // T_DATE is known to be UTC. Otherwise it is local date/time
     );
 
+
+    VALUE_STRING_CVT_TYPE = (
+        CVT_SIMPLE,       ///< simple conversion of terminal values
+        CVT_JSON_LITERAL, ///< json literal parsing/emission
+        CVT_JSON_MAP      ///< json parsing/emission, it parses as if token '{' already recognized
+    );
+
+(**
+ * ValueInit - initialize VALUE storage
+ * This call has to be made before passing VALUE* to any other functions
+ *)
+function HTMLayoutValueInit( pVal : PRHtmlValue ) : UINT; stdcall;
+
+(**
+ * ValueClear - clears the VALUE and deallocates all assosiated structures that are not used anywhere else.
+ *)
+function HTMLayoutValueClear( pVal : PRHtmlValue ) : UINT; stdcall;
+
+(**
+ * ValueType - returns VALUE_TYPE and VALUE_UNIT_TYPE flags of the VALUE
+ *)
+function HTMLayoutValueType( pVal : PRHtmlValue; var pType : UINT; var pUnits : UINT ) : UINT; stdcall;
+
+(**
+ * ValueStringData - returns string data for T_STRING type
+ * For T_FUNCTION returns name of the fuction.
+ *)
+function HTMLayoutValueStringData( pVal : PRHtmlValue; var pChars : LPCWSTR; var pNumChars : UINT ) : UINT; stdcall;
+
+(**
+ * ValueFromString - parses string into value:
+ * - CVT_SIMPLE - parse/emit terminal values (T_INT, T_FLOAT, T_LENGTH, T_STRING), "guess" non-strict parsing
+ * - CVT_JSON_LITERAL - parse/emit value using JSON literal rules: {}, [], "string", true, false, null
+ * - CVT_JSON_MAP - parse/emit MAP value without enclosing '{' and '}' brackets.
+ * Returns:
+ *   Number of non-parsed characters in case of errors. Thus if string was parsed in full it returns 0 (success)
+*)
+function HTMLayoutValueFromString( const pVal : PRHtmlValue; str : LPCWSTR; strLength : UINT; how : VALUE_STRING_CVT_TYPE ) : UINT; stdcall;
+
+(**
+ * ValueToString - converts value to T_STRING inplace:
+ * - CVT_SIMPLE - parse/emit terminal values (T_INT, T_FLOAT, T_LENGTH, T_STRING)
+ * - CVT_JSON_LITERAL - parse/emit value using JSON literal rules: {}, [], "string", true, false, null
+ * - CVT_JSON_MAP - parse/emit MAP value without enclosing '{' and '}' brackets.
+ *)
+function HTMLayoutValueToString( const pVal : PRHtmlValue; how : VALUE_STRING_CVT_TYPE ) : UINT; stdcall;
+
 implementation
+
+uses HtmlDll;
+
+function HTMLayoutValueInit( pVal : PRHtmlValue ) : UINT; external HTMLayoutDLL name 'ValueInit'; stdcall;
+function HTMLayoutValueClear( pVal : PRHtmlValue ) : UINT; external HTMLayoutDLL name 'ValueClear'; stdcall;
+
+function HTMLayoutValueType( pVal : PRHtmlValue; var pType : UINT; var pUnits : UINT ) : UINT; external HTMLayoutDLL name 'ValueType'; stdcall;
+function HTMLayoutValueStringData( pVal : PRHtmlValue; var pChars : LPCWSTR; var pNumChars : UINT ) : UINT; external HTMLayoutDLL name 'ValueStringData'; stdcall;
+
+function HTMLayoutValueFromString( const pVal : PRHtmlValue; str : LPCWSTR; strLength : UINT; how : VALUE_STRING_CVT_TYPE ) : UINT; external HTMLayoutDLL name 'ValueFromString'; stdcall;
+function HTMLayoutValueToString( const pVal : PRHtmlValue; how : VALUE_STRING_CVT_TYPE ) : UINT; external HTMLayoutDLL name 'ValueToString'; stdcall;
 
 end.

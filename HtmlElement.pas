@@ -19,8 +19,10 @@ uses Windows, sysutils, Contnrs, graphics
     , HtmlLayoutH
     , HtmlLayoutDomH
     , HtmlValueH
+    , HtmlValue
     , unisSVG
     , toolsString
+    , htmlConst
 ;
 
 const
@@ -28,11 +30,6 @@ const
 
 type
     THtmlHElement = class;
-
-    // just a list of most friquently used attributes, fill free to extend it. see THtmlHElement CSS shorcuts below
-    HTML_STYLE_ATTRS = (
-        saWIDTH, saHEIGHT, saTOP, saLEFT, saBACKGROUND_COLOR, saCOLOR, saVISIBILITY
-    );
 
 {---------------------------- THtmlHElement -----------------------------------}
 
@@ -58,6 +55,7 @@ private
     Fhandler                    : HELEMENT;
     FlastError                  : HLDOM_RESULT;
     Funused                     : boolean;
+    Fvalue                      : THtmlValue;
 
 private
     procedure   setHandler( const aHandler : HELEMENT );
@@ -92,6 +90,10 @@ private
     procedure   setStates( aBits : cardinal );
     function    getState( aBit : cardinal ) : boolean;
     procedure   setState( aBit : cardinal; aState : boolean );
+    function    getNamedState( aBit : integer ) : boolean;
+    procedure   setNamedState( aBit : integer; aState : boolean );
+
+    function    getValue() : THtmlValue;
 
 protected
     function    getChild( const aIndex : integer ) : HELEMENT;
@@ -131,8 +133,7 @@ public
     procedure   insert( const aHandler : HELEMENT; const index : cardinal );
     procedure   append( const aHandler : HELEMENT );
 
-    // delete DOM element given by Fhandler from html
-    procedure   delete();
+    procedure   delete(); // delete DOM element given by Fhandler from html
     function    is_valid() : boolean; overload;
     function    is_valid( const aHandler : HELEMENT ) : boolean; overload;
     function    children_count() : cardinal;
@@ -151,7 +152,7 @@ public
     procedure   select( aCallback : HTMLayoutHElementCallback; const aSelector : string; const aParams : POINTER = nil ); overload;
     procedure   select( aCallback : HTMLayoutElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 ); overload;
     procedure   select( aCallback : HTMLayoutHElementCallback; const aParams : POINTER = nil; const aTag : string = ''; const aAttrName : string = ''; const aAttrValue : widestring = ''; aDepth : integer = 0 ); overload;
-    procedure   select( const aSelector : string; var aResult : HELEMENT ); overload;
+    procedure   select( const aSelector : string; var aResult : HELEMENT ); overload; virtual;
 
     procedure   update( const render_now : boolean = false ); overload;
     // aMode - bitwise combination of UPDATE_ELEMENT_FLAGS
@@ -161,6 +162,10 @@ public
     function    is_inside( const client_pt : TPOINT ) : boolean;
     procedure   scroll_to_view( toTopOfView : boolean = false; smooth : boolean = false );
     function    get_element_type() : string;
+
+    function    get_value() : RHtmlValue; // this is low level API call of HTMLayoutControlGetValue, use 'value' property instead ( see. THtmlValue )
+    procedure   set_value( var aValue : RHtmlValue ); // this is low level API call of HTMLayoutControlSetValue, use 'value' property instead ( see. THtmlValue )
+
     function    get_element_hwnd( const root_window : boolean ) : HWND;
     function    get_element_uid() : UINT;
     function    combine_url( const inURL : widestring ) : widestring;
@@ -218,14 +223,48 @@ public // property
     property innerText16 : widestring read getInnerText16 write setInnerText16;
     property location : TRect read getLocation;
 
-public // CSS shorcuts, fill free to extend it.
-    property pxWidth : integer index saWIDTH read getStyleAsInt write setStyleAsInt;
-    property pxHeight : integer index saHEIGHT read getStyleAsInt write setStyleAsInt;
-    property pxLeft : integer index saLEFT read getStyleAsInt write setStyleAsInt;
-    property pxTop : integer index saTOP read getStyleAsInt write setStyleAsInt;
-    property backgroundColor : string index saBACKGROUND_COLOR read getStyleAsString write setStyleAsString;
-    property color : string index saCOLOR read getStyleAsString write setStyleAsString;
-    property visibility : string index saVISIBILITY read getStyleAsString write setStyleAsString;
+public // property: CSS shorcuts, fill free to extend it.
+    property pxWidth : integer index STYLE_ATTR_WIDTH read getStyleAsInt write setStyleAsInt;
+    property pxHeight : integer index STYLE_ATTR_HEIGHT read getStyleAsInt write setStyleAsInt;
+    property pxLeft : integer index STYLE_ATTR_LEFT read getStyleAsInt write setStyleAsInt;
+    property pxTop : integer index STYLE_ATTR_TOP read getStyleAsInt write setStyleAsInt;
+    property backgroundColor : string index STYLE_ATTR_BACKGROUND_COLOR read getStyleAsString write setStyleAsString;
+    property color : string index STYLE_ATTR_COLOR read getStyleAsString write setStyleAsString;
+    property visibility : string index STYLE_ATTR_VISIBILITY read getStyleAsString write setStyleAsString;
+    property value : THtmlValue read getValue;
+
+public // property|: predefined states, same as state[ aState : cardinal ] but with more readable names
+    // more info on states could be found here http://www.terrainformatica.com/htmlayout/csss!-dom-object.htm
+    property link : boolean index STATE_LINK read getNamedState write setNamedState; // any element having href attribute
+    property hover : boolean index STATE_HOVER read getNamedState write setNamedState; // element is under the cursor, mouse hover
+    property active : boolean index STATE_ACTIVE read getNamedState write setNamedState; // element is activated, e.g. pressed
+    property focus : boolean index STATE_FOCUS read getNamedState write setNamedState; // element is in focus
+    property visited : boolean index STATE_VISITED read getNamedState write setNamedState; // aux flag - not used internally now
+    property current : boolean index STATE_CURRENT read getNamedState write setNamedState; // current (hot) item in collection, e.g. current <option> in <select>
+    property checked : boolean index STATE_CHECKED read getNamedState write setNamedState; // element is checked (or selected), e.g. check box or itme in multiselect
+    property disabled : boolean index STATE_DISABLED read getNamedState write setNamedState; // element is disabled, behavior related flag.
+    property readonly : boolean index STATE_READONLY read getNamedState write setNamedState; // readonly input element, behavior related flag
+    property expanded : boolean index STATE_EXPANDED read getNamedState write setNamedState; // expanded state - nodes in tree view e.g. <options> in <select>
+    property collapsed : boolean index STATE_COLLAPSED read getNamedState write setNamedState; // collapsed state - nodes in tree view - mutually exclusive with EXPANDED
+    property incomplete : boolean index STATE_INCOMPLETE read getNamedState write setNamedState; // element has (back/fore/bullet) images requested but not delivered
+    property animating : boolean index STATE_ANIMATING read getNamedState write setNamedState; // is animating currently
+    property focusable : boolean index STATE_FOCUSABLE read getNamedState write setNamedState; // shall accept focus
+    property anchor : boolean index STATE_ANCHOR read getNamedState write setNamedState; //  first element in selection (<select miltiple>), :CURRENT is the current
+    property synthetic : boolean index STATE_SYNTHETIC read getNamedState write setNamedState; // synthesized DOM elements - don't emit it's head/tail, e.g. all missed cells in tables (<td>) are getting this flag
+    property owns_popup : boolean index STATE_OWNS_POPUP read getNamedState write setNamedState; // anchor(owner) element of visible popup.
+    property tab_focus : boolean index STATE_TABFOCUS read getNamedState write setNamedState; // element got focus by tab traversal. engine set it together with :focus.
+    property empty : boolean index STATE_EMPTY read getNamedState write setNamedState; // element is empty.
+    property busy : boolean index STATE_BUSY read getNamedState write setNamedState; // element is busy; loading. HTMLayoutRequestElementData will set this flag if external data was requested for the element. When data will be delivered engine will reset this flag on the element.
+    property drag_over : boolean index STATE_DRAG_OVER read getNamedState write setNamedState; // drag over the block that can accept it (so is current drop target). Flag is set for the drop target block. At any given moment of time it can be only one such block.
+    property drop_target : boolean index STATE_DROP_TARGET read getNamedState write setNamedState; // active drop target. Multiple elements can have this flag when D&D is active.
+    property moving : boolean index STATE_MOVING read getNamedState write setNamedState; // dragging/moving - the flag is set for the moving element (copy of the drag-source).
+    property copying : boolean index STATE_COPYING read getNamedState write setNamedState; // dragging/copying - the flag is set for the copying element (copy of the drag-source).
+    property drag_source : boolean index STATE_DRAG_SOURCE read getNamedState write setNamedState; // is set in element that is being dragged (element that is a drag source)
+    property drop_marker : boolean index STATE_DROP_MARKER read getNamedState write setNamedState; // element is drop marker
+    property pressed : boolean index STATE_PRESSED read getNamedState write setNamedState; // pressed - close to active but has wider life span - e.g. in MOUSE_UP it is still on, so behavior can check it in MOUSE_UP to discover CLICK condition.
+    property popup : boolean index STATE_POPUP read getNamedState write setNamedState; // this element is in popup state and presented to the user - out of flow now
+    property ltr : boolean index STATE_IS_LTR read getNamedState write setNamedState; // the element or one of its nearest container has @dir and that dir has "ltr" value
+    property rtl : boolean index STATE_IS_RTL read getNamedState write setNamedState; // the element or one of its nearest container has @dir and that dir has "rtl" value.
 
     end;
 
@@ -364,9 +403,171 @@ protected
 public
     destructor  Destroy(); override;
 
+    procedure   AfterConstruction(); override;
+
 protected
     function    addElement( aHandler : HELEMENT ) : THtmlElement;
     function    getIndex( aHandler : HELEMENT ) : integer;
+
+    end;
+
+    {***************************************************************************
+    * THtmlElementList
+    ***************************************************************************}
+    THtmlElementList = class( TObjectList )
+protected
+    Fowner                      : THtmlElement;
+    FautoFreeMemory             : boolean;
+
+private
+    function    getElementByIndex( aIndex : integer ) : THtmlElement;
+    function    addElement( he : HELEMENT ) : integer;
+
+protected // events setters and handlers
+    procedure   attachInitialization( aCmd : integer; aEventHandler : HTMLElementInitializationEventHandler );
+    procedure   attachMouse( aCmd : integer; aEventHandler : HTMLElementMouseEventHandler );
+    procedure   attachKey( aCmd : integer; aEventHandler : HTMLElementKeyEventHandler );
+    procedure   attachFocus( aCmd : integer; aEventHandler : HTMLElementFocusEventHandler );
+    procedure   attachScroll( aCmd : integer; aEventHandler : HTMLElementScrollEventHandler );
+    procedure   attachTimer( aEventHandler : HTMLElementTimerEventHandler );
+    procedure   attachSize( aEventHandler : HTMLElementSizeEventHandler );
+    procedure   attachDraw( aCmd : integer; aEventHandler : HTMLElementDrawEventHandler );
+    procedure   attachDataArrived( aEventHandler : HTMLElementDataArrivedEventHandler );
+    procedure   attachExchange( aCmd : integer; aEventHandler : HTMLElementExchangeEventHandler );
+    procedure   attachGesture( aCmd : integer; aEventHandler : HTMLElementGestureEventHandler );
+    procedure   attachBehavior( aCmd : integer; aEventHandler : HTMLElementBehaviorEventHandler );
+
+public
+    procedure   AfterConstruction(); override;
+
+public // property
+    property elements[ aIndex : integer ] : THtmlElement read getElementByIndex; default;
+
+public // events
+    // INITIALIZATION
+    property onInitialization : HTMLElementInitializationEventHandler index INITIALIZATION_ALL write attachInitialization; // All INITIALIZATION events
+    property onBehaviorDetach : HTMLElementInitializationEventHandler index BEHAVIOR_DETACH write attachInitialization;
+    property onBehaviorAttach : HTMLElementInitializationEventHandler index BEHAVIOR_ATTACH write attachInitialization;
+
+    // MOUSE
+    property onMouse : HTMLElementMouseEventHandler index MOUSE_ALL write attachMouse; // All MOUSE events
+    property onMouseEnter : HTMLElementMouseEventHandler index MOUSE_ENTER write attachMouse;
+    property onMouseLeave : HTMLElementMouseEventHandler index MOUSE_LEAVE write attachMouse;
+    property onMouseMove : HTMLElementMouseEventHandler index MOUSE_MOVE write attachMouse;
+    property onMouseUp : HTMLElementMouseEventHandler index MOUSE_UP write attachMouse;
+    property onMouseDown : HTMLElementMouseEventHandler index MOUSE_DOWN write attachMouse;
+    property onMouseClick : HTMLElementMouseEventHandler index MOUSE_CLICK write attachMouse;
+    property onClick : HTMLElementMouseEventHandler index MOUSE_CLICK write attachMouse;
+    property onMouseDClick : HTMLElementMouseEventHandler index MOUSE_DCLICK write attachMouse;
+    property onDblClick : HTMLElementMouseEventHandler index MOUSE_DCLICK write attachMouse;
+    property onMouseWheel : HTMLElementMouseEventHandler index MOUSE_WHEEL write attachMouse;
+    property onWheel : HTMLElementMouseEventHandler index MOUSE_WHEEL write attachMouse;
+    property onMouseTick : HTMLElementMouseEventHandler index MOUSE_TICK write attachMouse;
+    property onMouseIdle : HTMLElementMouseEventHandler index MOUSE_IDLE write attachMouse;
+    property onDrop : HTMLElementMouseEventHandler index DROP write attachMouse;
+    property onDragEnter : HTMLElementMouseEventHandler index DRAG_ENTER write attachMouse;
+    property onDragLeave : HTMLElementMouseEventHandler index DRAG_LEAVE write attachMouse;
+    property onDragRequest : HTMLElementMouseEventHandler index DRAG_REQUEST write attachMouse;
+    property onMouseDraggingEnter : HTMLElementMouseEventHandler index MOUSE_ENTER or DRAGGING write attachMouse;
+    property onMouseDraggingLeave : HTMLElementMouseEventHandler index MOUSE_LEAVE or DRAGGING write attachMouse;
+    property onMouseDraggingMove : HTMLElementMouseEventHandler index MOUSE_MOVE or DRAGGING write attachMouse;
+    property onMouseDraggingUp : HTMLElementMouseEventHandler index MOUSE_UP or DRAGGING write attachMouse;
+    property onMouseDraggingDown : HTMLElementMouseEventHandler index MOUSE_DOWN or DRAGGING write attachMouse;
+
+    // KEY
+    property onKey : HTMLElementKeyEventHandler index KEY_ALL write attachKey; // All KEY events
+    property onKeyDown : HTMLElementKeyEventHandler index KEY_DOWN write attachKey;
+    property onKeyUp : HTMLElementKeyEventHandler index KEY_UP write attachKey;
+    property onKeyChar : HTMLElementKeyEventHandler index KEY_CHAR write attachKey;
+
+    // FOCUS
+    property onFocus : HTMLElementFocusEventHandler index FOCUS_ALL write attachFocus; // All KEY events
+    property onFocusLost : HTMLElementFocusEventHandler index FOCUS_LOST write attachFocus;
+    property onFocusGot : HTMLElementFocusEventHandler index FOCUS_GOT write attachFocus;
+
+    // SCROLL
+    property onScroll : HTMLElementScrollEventHandler index SCROLL_ALL write attachScroll; // All SCROLL events
+    property onScrollHome : HTMLElementScrollEventHandler index SCROLL_HOME write attachScroll;
+    property onScrollEnd : HTMLElementScrollEventHandler index SCROLL_END write attachScroll;
+    property onScrollStepPlus : HTMLElementScrollEventHandler index SCROLL_STEP_PLUS write attachScroll;
+    property onScrollStepMinus : HTMLElementScrollEventHandler index SCROLL_STEP_MINUS write attachScroll;
+    property onScrollPagePlus : HTMLElementScrollEventHandler index SCROLL_PAGE_PLUS write attachScroll;
+    property onScrollPageMinus : HTMLElementScrollEventHandler index SCROLL_PAGE_MINUS write attachScroll;
+    property onScrollPos : HTMLElementScrollEventHandler index SCROLL_POS write attachScroll;
+    property onScrollSliderReleased : HTMLElementScrollEventHandler index SCROLL_SLIDER_RELEASED write attachScroll;
+
+    // TIMER
+    property onTimer : HTMLElementTimerEventHandler write attachTimer;
+
+    // SIZE
+    property onSize : HTMLElementSizeEventHandler write attachSize;
+
+    // DRAW
+    property onDraw : HTMLElementDrawEventHandler index DRAW_ALL write attachDraw; // All DRAW events
+    property onDrawBackground : HTMLElementDrawEventHandler index DRAW_BACKGROUND write attachDraw;
+    property onDrawContent : HTMLElementDrawEventHandler index DRAW_CONTENT write attachDraw;
+    property onDrawForeground : HTMLElementDrawEventHandler index DRAW_FOREGROUND write attachDraw;
+
+    // HANDLE_DATA_ARRIVED
+    property onDataArrived : HTMLElementDataArrivedEventHandler write attachDataArrived;
+
+    // EXCHANGE
+    property onExchange : HTMLElementExchangeEventHandler index EXC_ALL write attachExchange; // All EXCHANGE events
+    property onExchangeNone : HTMLElementExchangeEventHandler index EXC_NONE write attachExchange;
+    property onExchangeCopy : HTMLElementExchangeEventHandler index EXC_COPY write attachExchange;
+    property onExchangeMove : HTMLElementExchangeEventHandler index EXC_MOVE write attachExchange;
+    property onExchangeLink : HTMLElementExchangeEventHandler index EXC_LINK write attachExchange;
+
+    // GESTURE
+    property onGesture : HTMLElementGestureEventHandler index GESTURE_ALL write attachGesture; // All GESTURE events
+    property onGestureRequest : HTMLElementGestureEventHandler index GESTURE_REQUEST write attachGesture;
+    property onGestureZoom : HTMLElementGestureEventHandler index GESTURE_ZOOM write attachGesture;
+    property onGesturePan : HTMLElementGestureEventHandler index GESTURE_PAN write attachGesture;
+    property onGestureRotate : HTMLElementGestureEventHandler index GESTURE_ROTATE write attachGesture;
+    property onGestureTap1 : HTMLElementGestureEventHandler index GESTURE_TAP1 write attachGesture;
+    property onGestureTap2 : HTMLElementGestureEventHandler index GESTURE_TAP2 write attachGesture;
+
+    // BEHAVIOR_EVENT
+    property onButtonClick : HTMLElementBehaviorEventHandler index BUTTON_CLICK write attachBehavior;
+    property onButtonPress : HTMLElementBehaviorEventHandler index BUTTON_PRESS write attachBehavior;
+    property onButtonStateChanged : HTMLElementBehaviorEventHandler index BUTTON_STATE_CHANGED write attachBehavior;
+    property onEditValueChanging : HTMLElementBehaviorEventHandler index EDIT_VALUE_CHANGING write attachBehavior;
+    property onEditValueChanged : HTMLElementBehaviorEventHandler index EDIT_VALUE_CHANGED write attachBehavior;
+    property onSelectSelectionChanged : HTMLElementBehaviorEventHandler index SELECT_SELECTION_CHANGED write attachBehavior;
+    property onSelectStateChanged : HTMLElementBehaviorEventHandler index SELECT_STATE_CHANGED write attachBehavior;
+    property onPopupRequest : HTMLElementBehaviorEventHandler index POPUP_REQUEST write attachBehavior;
+    property onPopupReady : HTMLElementBehaviorEventHandler index POPUP_READY write attachBehavior;
+    property onPopupDismissed : HTMLElementBehaviorEventHandler index POPUP_DISMISSED write attachBehavior;
+    property onMenuItemActive : HTMLElementBehaviorEventHandler index MENU_ITEM_ACTIVE write attachBehavior;
+    property onMenuItemClick : HTMLElementBehaviorEventHandler index MENU_ITEM_CLICK write attachBehavior;
+    property onContextMenuSetup : HTMLElementBehaviorEventHandler index CONTEXT_MENU_SETUP write attachBehavior;
+    property onContextMenuRequest : HTMLElementBehaviorEventHandler index CONTEXT_MENU_REQUEST write attachBehavior;
+    property onVisiualStatusChanged : HTMLElementBehaviorEventHandler index VISIUAL_STATUS_CHANGED write attachBehavior;
+    property onDisabledStatusChanged : HTMLElementBehaviorEventHandler index DISABLED_STATUS_CHANGED write attachBehavior;
+    property onPopupDismissing : HTMLElementBehaviorEventHandler index POPUP_DISMISSING write attachBehavior;
+    // "grey" event codes  - notfications from behaviors from this SDK
+    property onHyperLinkClick : HTMLElementBehaviorEventHandler index HYPERLINK_CLICK write attachBehavior;
+    property onTableHeaderClick : HTMLElementBehaviorEventHandler index TABLE_HEADER_CLICK write attachBehavior;
+    property onTableRowClick : HTMLElementBehaviorEventHandler index TABLE_ROW_CLICK write attachBehavior;
+    property onTableRowDblClick : HTMLElementBehaviorEventHandler index TABLE_ROW_DBL_CLICK write attachBehavior;
+    property onElementCollapsed : HTMLElementBehaviorEventHandler index ELEMENT_COLLAPSED write attachBehavior;
+    property onElementExpanded : HTMLElementBehaviorEventHandler index ELEMENT_EXPANDED write attachBehavior;
+    property onActivateChild : HTMLElementBehaviorEventHandler index ACTIVATE_CHILD write attachBehavior;
+    property onDoSwitchTab : HTMLElementBehaviorEventHandler index DO_SWITCH_TAB write attachBehavior;
+    property onInitDataView : HTMLElementBehaviorEventHandler index INIT_DATA_VIEW write attachBehavior;
+    property onRowsDataRequest : HTMLElementBehaviorEventHandler index ROWS_DATA_REQUEST write attachBehavior;
+    property onUiStateChanged : HTMLElementBehaviorEventHandler index UI_STATE_CHANGED write attachBehavior;
+    property onFormSubmit : HTMLElementBehaviorEventHandler index FORM_SUBMIT write attachBehavior;
+    property onFormReset : HTMLElementBehaviorEventHandler index FORM_RESET write attachBehavior;
+    property onDocumentComplete : HTMLElementBehaviorEventHandler index DOCUMENT_COMPLETE write attachBehavior;
+    property onHistoryPush : HTMLElementBehaviorEventHandler index HISTORY_PUSH write attachBehavior;
+    property onHistoryDrop : HTMLElementBehaviorEventHandler index HISTORY_DROP write attachBehavior;
+    property onHistoryPrior : HTMLElementBehaviorEventHandler index HISTORY_PRIOR write attachBehavior;
+    property onHistoryNext : HTMLElementBehaviorEventHandler index HISTORY_NEXT write attachBehavior;
+    property onHistoryStateChanged : HTMLElementBehaviorEventHandler index HISTORY_STATE_CHANGED write attachBehavior;
+    property onClosePopup : HTMLElementBehaviorEventHandler index CLOSE_POPUP write attachBehavior;
+    property onRequestTooltip : HTMLElementBehaviorEventHandler index REQUEST_TOOLTIP write attachBehavior;
+    property onAnimation : HTMLElementBehaviorEventHandler index ANIMATION write attachBehavior;
 
     end;
 
@@ -389,8 +590,9 @@ private
     function    getChild( const aIndex : integer ) : THtmlElement;
     function    getEventHandlers() : TEventHandlers;
     function    getOwnElements() : TElementHolders;
+    function    getElementsBySelector( const aSelector : string ) : THtmlElementList;
 
-private // events seters and handlers
+private // events setters and handlers
     procedure   attachInitialization( const aCmd : integer; const aEventHandler : HTMLElementInitializationEventHandler );
     procedure   attachMouse( const aCmd : integer; const aEventHandler : HTMLElementMouseEventHandler );
     procedure   attachKey( const aCmd : integer; const aEventHandler : HTMLElementKeyEventHandler );
@@ -484,6 +686,7 @@ public // Event Handlers
     function    attach( const aEventHandler : HTMLElementBehaviorEventHandler; const aCmd : integer = BEHAVIOR_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION ) : THtmlCmdEventParams; overload;
     procedure   detach( const aEventHandler : HTMLElementBehaviorEventHandler; const aCmd : integer = BEHAVIOR_ALL; aTag : Pointer = nil; aSubscription : UINT = HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION ); overload;
 
+
 public // property
     property root : THtmlElement read getRoot;
     property parent : THtmlElement read getParent;
@@ -492,7 +695,7 @@ public // property
     property prevSibling : THtmlElement read prev_sibling;
     property firstSibling : THtmlElement read first_sibling;
     property lastSibling : THtmlElement read last_sibling;
-
+    property elements[ const aSelector : string ] : THtmlElementList read getElementsBySelector;
 
 public // events
     // INITIALIZATION
@@ -508,8 +711,11 @@ public // events
     property onMouseUp : HTMLElementMouseEventHandler index MOUSE_UP write attachMouse;
     property onMouseDown : HTMLElementMouseEventHandler index MOUSE_DOWN write attachMouse;
     property onMouseClick : HTMLElementMouseEventHandler index MOUSE_CLICK write attachMouse;
+    property onClick : HTMLElementMouseEventHandler index MOUSE_CLICK write attachMouse;
     property onMouseDClick : HTMLElementMouseEventHandler index MOUSE_DCLICK write attachMouse;
+    property onDblClick : HTMLElementMouseEventHandler index MOUSE_DCLICK write attachMouse;
     property onMouseWheel : HTMLElementMouseEventHandler index MOUSE_WHEEL write attachMouse;
+    property onWheel : HTMLElementMouseEventHandler index MOUSE_WHEEL write attachMouse;
     property onMouseTick : HTMLElementMouseEventHandler index MOUSE_TICK write attachMouse;
     property onMouseIdle : HTMLElementMouseEventHandler index MOUSE_IDLE write attachMouse;
     property onDrop : HTMLElementMouseEventHandler index DROP write attachMouse;
@@ -608,7 +814,7 @@ public // events
     property onFormSubmit : HTMLElementBehaviorEventHandler index FORM_SUBMIT write attachBehavior;
     property onFormReset : HTMLElementBehaviorEventHandler index FORM_RESET write attachBehavior;
     property onDocumentComplete : HTMLElementBehaviorEventHandler index DOCUMENT_COMPLETE write attachBehavior;
-    property onhistoryPush : HTMLElementBehaviorEventHandler index HISTORY_PUSH write attachBehavior;
+    property onHistoryPush : HTMLElementBehaviorEventHandler index HISTORY_PUSH write attachBehavior;
     property onHistoryDrop : HTMLElementBehaviorEventHandler index HISTORY_DROP write attachBehavior;
     property onHistoryPrior : HTMLElementBehaviorEventHandler index HISTORY_PRIOR write attachBehavior;
     property onHistoryNext : HTMLElementBehaviorEventHandler index HISTORY_NEXT write attachBehavior;
@@ -617,7 +823,7 @@ public // events
     property onRequestTooltip : HTMLElementBehaviorEventHandler index REQUEST_TOOLTIP write attachBehavior;
     property onAnimation : HTMLElementBehaviorEventHandler index ANIMATION write attachBehavior;
 
-    end;
+    end;
 
     {***************************************************************************
     * THtmlShim
@@ -631,7 +837,6 @@ private
     function    getPrevSibling() : THtmlShim;
     function    getFirstSibling() : THtmlShim;
     function    getLastSibling() : THtmlShim;
-
 
 protected
     //function    createElement( const aHandler : HELEMENT ) : THtmlElement; override;
@@ -652,8 +857,10 @@ public
     function    append( const element : THtmlHElement ) : THtmlShim;
     function    detach() : THtmlShim; overload;
 
-class function  get( const aHandler : HELEMENT ) : THtmlShim; overload;
+class function  get( aHandler : HELEMENT ) : THtmlShim; overload;
 class function  get( aElement : THtmlElement ) : THtmlShim; overload;
+
+class function  getId( aHandler : HELEMENT ) : widestring;
 
 public // property
     property root : THtmlShim read getRoot;
@@ -670,10 +877,10 @@ implementation
 
 uses HtmlEvents;
 
-const
-    mapHTML_STYLE_ATTRS : array[ HTML_STYLE_ATTRS ] of string = (
-        'width', 'height', 'top', 'left', 'background-color', 'color', 'visibility'
-    );
+//type
+//    PROnSelectCallback = record
+//    elemen
+//    end;
 
 var
     GlobalShim : THtmlShim;
@@ -951,8 +1158,9 @@ end;
 *******************************************************************************}
 constructor THtmlHElement.Create();
 begin
-    Funused := false;
+    Funused  := false;
     Fhandler := nil;
+    Fvalue   := nil;
 
     _AddRef();
 end;
@@ -993,7 +1201,8 @@ end;
 destructor THtmlHElement.Destroy();
 begin
     assert( Funused, 'You have to call unuse to free the object! Do not call Free or FreeAndNil' );
-    freeResources();    
+    
+    freeResources();
     internalUnuse();
     inherited;
 end;
@@ -1030,7 +1239,8 @@ end;
 * freeResources
 *******************************************************************************}
 procedure THtmlHElement.freeResources();
-begin // Just a placeholder for a time
+begin
+    FreeAndNil( Fvalue );
 end;
 
 {*******************************************************************************
@@ -1419,7 +1629,7 @@ end;
 *******************************************************************************}
 procedure THtmlHElement.setStyleAsInt( const aAttrIndex : integer; const aValue : integer );
 begin
-    style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ] := IntToStr( aValue );
+    style[ HTMLStyleAttributes[ EHTMLStyleAttributes( aAttrIndex ) ] ] := IntToStr( aValue );
 end;
 
 {*******************************************************************************
@@ -1427,7 +1637,7 @@ end;
 *******************************************************************************}
 function THtmlHElement.getStyleAsInt( const aAttrIndex : integer ) : integer;
 begin
-    Result := StyleStrToInt( style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ] );
+    Result := StyleStrToInt( style[ HTMLStyleAttributes[ EHTMLStyleAttributes( aAttrIndex ) ] ] );
 end;
 
 {*******************************************************************************
@@ -1435,7 +1645,7 @@ end;
 *******************************************************************************}
 procedure THtmlHElement.setStyleAsString( const aAttrIndex : integer; const aValue : string );
 begin
-    style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ] := aValue;
+    style[ HTMLStyleAttributes[ EHTMLStyleAttributes( aAttrIndex ) ] ] := aValue;
 end;
 
 {*******************************************************************************
@@ -1443,7 +1653,7 @@ end;
 *******************************************************************************}
 function THtmlHElement.getStyleAsString( const aAttrIndex : integer ) : string;
 begin
-    Result := style[ mapHTML_STYLE_ATTRS[ HTML_STYLE_ATTRS( aAttrIndex ) ] ];
+    Result := style[ HTMLStyleAttributes[ EHTMLStyleAttributes( aAttrIndex ) ] ];
 end;
 
 {*******************************************************************************
@@ -1941,6 +2151,50 @@ begin
 end;
 
 {*******************************************************************************
+* get_value
+*******************************************************************************}
+function THtmlHElement.get_value() : RHtmlValue;
+begin
+    assert( is_valid() );
+    FlastError := HTMLayoutControlGetValue( Fhandler, @Result );
+    assert( FlastError = HLDOM_OK );
+    if ( FlastError <> HLDOM_OK ) then
+        exit;
+
+end;
+
+{*******************************************************************************
+* set_value
+*******************************************************************************}
+procedure THtmlHElement.set_value( var aValue : RHtmlValue );
+begin
+    assert( is_valid() );
+    FlastError := HTMLayoutControlSetValue( Fhandler, @aValue );
+    assert( FlastError = HLDOM_OK );
+    if ( FlastError <> HLDOM_OK ) then
+        exit;
+
+end;
+
+{*******************************************************************************
+* getValue
+*******************************************************************************}
+function THtmlHElement.getValue() : THtmlValue;
+begin
+    if ( Fvalue = nil ) then
+    begin
+        Fvalue := THtmlValue.create( Fhandler );
+    end;
+    
+    Fvalue.handler := Fhandler;
+    Result := Fvalue;
+end;
+
+//function  HTMLayoutControlGetValue( he : HELEMENT; var pVal : HtmlVALUE ) : HLDOM_RESULT; stdcall;
+//function  HTMLayoutControlSetValue( he : HELEMENT; const pVal : PHtmlVALUE ) : HLDOM_RESULT; stdcall;
+
+
+{*******************************************************************************
 * get_element_hwnd
 *******************************************************************************}
 function THtmlHElement.get_element_hwnd( const root_window : boolean ) : HWND;
@@ -2041,6 +2295,22 @@ begin
         set_state( aBit, 0, true )
     else
         set_state( 0, aBit, true );
+end;
+
+{*******************************************************************************
+* getNamedState
+*******************************************************************************}
+function THtmlHElement.getNamedState( aBit : integer ) : boolean;
+begin
+    Result := state[ cardinal( aBit ) ];
+end;
+
+{*******************************************************************************
+* setState
+*******************************************************************************}
+procedure THtmlHElement.setNamedState( aBit : integer; aState : boolean );
+begin
+    state[ cardinal( aBit ) ] := aState;
 end;
 
 {*******************************************************************************
@@ -2391,6 +2661,27 @@ end;
 function THtmlElement.get_element_by_handler( const aHandler : HELEMENT ) : THtmlElement;
 begin
     Result := ownElements.addElement( aHandler );
+end;
+
+{*******************************************************************************
+* THtmlElement_OnSelectCallback
+*******************************************************************************}
+function THtmlElement_OnSelectCallback( he : HELEMENT; param : Pointer ) : BOOL; stdcall;
+begin
+    Result := false;
+    THtmlElementList( param ).addElement( he );
+end;
+
+{*******************************************************************************
+* getElementsBySelector
+*******************************************************************************}
+function THtmlElement.getElementsBySelector( const aSelector : string ) : THtmlElementList;
+begin
+    Result := THtmlElementList.Create();
+    Result.Fowner := self;
+    Result.FautoFreeMemory := true;
+
+    inherited select( THtmlElement_OnSelectCallback, aSelector, Pointer( Result ) );
 end;
 
 {*******************************************************************************
@@ -2876,14 +3167,12 @@ begin
     detach( TMethod( aEventHandler ), aCmd, aTag, aSubscription );
 end;
 
-
-
 {------------------------------- THtmlShim ------------------------------------}
 
 {*******************************************************************************
 * get
 *******************************************************************************}
-class function THtmlShim.get( const aHandler : HELEMENT ) : THtmlShim;
+class function THtmlShim.get( aHandler : HELEMENT ) : THtmlShim;
 begin
     assert( GlobalShim <> nil );
 
@@ -2897,6 +3186,17 @@ end;
 class function THtmlShim.get( aElement : THtmlElement ) : THtmlShim;
 begin
     Result := get( aElement.Fhandler );
+end;
+
+{*******************************************************************************
+* getId
+*******************************************************************************}
+class function THtmlShim.getId( aHandler : HELEMENT ) : widestring;
+var
+    shim : THtmlShim;
+begin
+    shim := get( aHandler );
+    Result := shim.id;
 end;
 
 {*******************************************************************************
@@ -3135,6 +3435,16 @@ begin
 end;
 
 {*******************************************************************************
+* AfterContruction
+*******************************************************************************}
+procedure TElementHolders.AfterConstruction();
+begin
+    inherited;
+
+    OwnsObjects := false;
+end;
+
+{*******************************************************************************
 * addElement
 *******************************************************************************}
 function TElementHolders.addElement( aHandler : HELEMENT ) : THtmlElement;
@@ -3179,6 +3489,261 @@ begin
     end;
 end;
 
+{-- THtmlElementList ----------------------------------------------------------}
+
+{*******************************************************************************
+* AfterContruction
+*******************************************************************************}
+procedure THtmlElementList.AfterConstruction();
+begin
+    inherited;
+    OwnsObjects := false;
+end;
+
+{*******************************************************************************
+* getElementByIndex
+*******************************************************************************}
+function THtmlElementList.getElementByIndex( aIndex : integer ) : THtmlElement;
+begin
+    Result := THtmlElement( inherited items[ aIndex ] );
+end;
+
+{*******************************************************************************
+* addElement
+*******************************************************************************}
+function THtmlElementList.addElement( he : HELEMENT ) : integer;
+begin
+    assert( Fowner <> nil );
+    Result := add( Fowner.get_element_by_handler( he ) );
+end;
+
+{*******************************************************************************
+* attachInitialization
+*******************************************************************************}
+procedure THtmlElementList.attachInitialization( aCmd : integer; aEventHandler : HTMLElementInitializationEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachInitialization( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachMouse
+*******************************************************************************}
+procedure THtmlElementList.attachMouse( aCmd : integer; aEventHandler : HTMLElementMouseEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachMouse( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachKey
+*******************************************************************************}
+procedure THtmlElementList.attachKey( aCmd : integer; aEventHandler : HTMLElementKeyEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachKey( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachFocus
+*******************************************************************************}
+procedure THtmlElementList.attachFocus( aCmd : integer; aEventHandler : HTMLElementFocusEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachFocus( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachScroll
+*******************************************************************************}
+procedure THtmlElementList.attachScroll( aCmd : integer; aEventHandler : HTMLElementScrollEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachScroll( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachDraw
+*******************************************************************************}
+procedure THtmlElementList.attachDraw( aCmd : integer; aEventHandler : HTMLElementDrawEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachDraw( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachTimer
+*******************************************************************************}
+procedure THtmlElementList.attachTimer( aEventHandler : HTMLElementTimerEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachTimer( aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachSize
+*******************************************************************************}
+procedure THtmlElementList.attachSize( aEventHandler : HTMLElementSizeEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachSize( aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachDataArrived
+*******************************************************************************}
+procedure THtmlElementList.attachDataArrived( aEventHandler : HTMLElementDataArrivedEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachDataArrived( aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachExchange
+*******************************************************************************}
+procedure THtmlElementList.attachExchange( aCmd : integer; aEventHandler : HTMLElementExchangeEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachExchange( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachGesture
+*******************************************************************************}
+procedure THtmlElementList.attachGesture( aCmd : integer; aEventHandler : HTMLElementGestureEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachGesture( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
+
+{*******************************************************************************
+* attachBehavior
+*******************************************************************************}
+procedure THtmlElementList.attachBehavior( aCmd : integer; aEventHandler : HTMLElementBehaviorEventHandler );
+var
+    i : integer;
+
+begin
+    for i := 0 to count - 1 do
+    begin
+        elements[i].attachBehavior( aCmd, aEventHandler );
+    end;
+
+    if ( not FautoFreeMemory ) then
+        exit;
+
+    Free();
+end;
 
 INITIALIZATION
     GlobalShim := THtmlShim.Create();

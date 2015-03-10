@@ -20,6 +20,7 @@ uses Windows, Messages, SysUtils, Classes, Controls
     , HtmlLayoutDomH
     , HtmlValueH
     , HtmlElement
+    , htmlNode
 ;
 
 type
@@ -52,6 +53,8 @@ private
     FOnDialogCreated            : THtmlCtrlNotifyEvent; // HLN_DIALOG_CREATED
     FOnDialogCloseRequest       : THtmlCtrlDialogCloseRequest; // HLN_DIALOG_CLOSE_RQ
     FOnDocumentLoaded           : THtmlCtrlNotifyEvent; // HLN_DOCUMENT_LOADED
+
+    FshowSelection              : boolean; // default false, see HTMLayoutModes (HtmlLayoutH.pas)
 
 private
     function    HtmlCallback(uMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
@@ -112,7 +115,7 @@ class function  SetDataLoader( aDataLoader : HTMLAYOUT_DATA_LOADER ) : boolean;
 class function  DeclareElementType( aName : PCHAR; aElementModel : HTMLayoutElementModel ) : boolean;
     function    SetCSS( aUtf8CSS : PCHAR; aCSSLength : cardinal; aBaseUrl : PWideChar; aMediaType : PWideChar ) : boolean; overload;
     function    SetMediaType( aMediaType : PWideChar ) : boolean;
-    function    SetMediaVars( const aMediaVars : PHtmlVALUE ) : boolean;
+    function    SetMediaVars( const aMediaVars : PRHtmlValue ) : boolean;
     function    SetHttpHeaders( aHttpHeaders : PCHAR; aHttpHeadersLength : cardinal ) : boolean; overload;
     function    SetOption( aOption : HTMLayoutOptions; aValue : cardinal ) : boolean;
     function    Render( aHBmp : HBITMAP; aDstRect : TRECT ) : boolean;
@@ -129,7 +132,8 @@ public // property
     property wideHtml : widestring read getWideHtml write setWideHtml;
 
     property html : string read getAnsiHtml write setAnsiHtml;
-    property root : HELEMENT read GetRootElement;
+    property hroot : HELEMENT read GetRootElement;
+    property showSelection : boolean read FshowSelection write FshowSelection;
 
 published
     property Action;
@@ -203,6 +207,28 @@ public // property
 
     end;
 
+    {***************************************************************************
+    * THtmlDocumentControl
+    ***************************************************************************}
+    THtmlDocumentControl = class( THtmlDOMControl )
+protected
+    Fdoc                        : THTMLDocView;
+
+protected
+    procedure   doOnDocumentComplete(); override;
+
+public
+    destructor  Destroy(); override;
+    procedure   AfterConstruction(); override;
+
+    // apply html content from Fdoc to the control
+    procedure   applyHtml(); virtual;
+
+public // property
+    property doc : THTMLDocView read Fdoc;
+
+    end;
+
 implementation
 
 //uses HtmlTest; // Just for testing
@@ -232,8 +258,8 @@ end;
 *******************************************************************************}
 procedure THtmlDOMControl.doOnDocumentComplete();
 begin
+    Fdom.handler := hroot;
     inherited;
-    Fdom.handler := root;
 end;
 
 {----------------------------- THtmlControl -----------------------------------}
@@ -244,6 +270,8 @@ end;
 constructor THtmlControl.Create(AOwner: TComponent);
 begin
     inherited Create( AOwner );
+
+    FshowSelection := false;
 end;
 
 {*******************************************************************************
@@ -274,7 +302,7 @@ var
     res     : LRESULT;
 
 begin
-    try
+    //try
         res := HTMLayoutProcND( Handle, Message.Msg, Message.WParam, Message.LParam, Handled );
         if Handled then
         begin
@@ -290,13 +318,13 @@ begin
         end;
 
         inherited WndProc( Message );
-    except
-{        on e : Exception do
+    {except
+        on e : Exception do
         begin
             if ( e <> nil ) then if ( e <> nil ) then;
             if ( Message.Msg <> 0 ) then if ( Message.Msg <> 0 ) then;
-        end;}
-    end;
+        end;
+    end;}
 end;
 
 {*******************************************************************************
@@ -351,6 +379,11 @@ end;
 *******************************************************************************}
 procedure THtmlControl.doOnDocumentComplete();
 begin
+    if ( FshowSelection ) then
+    begin
+        SetMode( HLM_SHOW_SELECTION );
+    end;
+
     if Assigned( FOnDocumentComplete ) then
     begin
         FOnDocumentComplete( self );
@@ -507,7 +540,7 @@ var
     bytes : PCHAR;
     res   : HLDOM_RESULT;
 begin
-    res := HTMLayoutGetElementHtml( root, bytes, false );
+    res := HTMLayoutGetElementHtml( hroot, bytes, false );
     assert( res = HLDOM_OK );
 
     Result := THtmlElement.cleanHtml( bytes );
@@ -748,7 +781,7 @@ end;
 {*******************************************************************************
 * SetMediaVars
 *******************************************************************************}
-function THtmlControl.SetMediaVars( const aMediaVars : PHtmlVALUE ) : boolean;
+function THtmlControl.SetMediaVars( const aMediaVars : PRHtmlValue ) : boolean;
 begin
     Result := HTMLayoutSetMediaVars( Handle, aMediaVars );
 end;
@@ -824,6 +857,48 @@ end;
 procedure THtmlControl.SetupDebugOutput( aParam : Pointer; aPFOutput : HTMLAYOUT_DEBUG_OUTPUT_PROC );
 begin
     HTMLayoutSetupDebugOutput( aParam, aPFOutput );
+end;
+
+{-- THtmlDocumentControl ------------------------------------------------------}
+
+{*******************************************************************************
+* AfterConstruction
+*******************************************************************************}
+procedure THtmlDocumentControl.AfterConstruction();
+begin
+    inherited;
+
+    Fdoc := THTMLDocView.Create();
+end;
+
+{*******************************************************************************
+* Destroy
+*******************************************************************************}
+destructor THtmlDocumentControl.Destroy();
+begin
+    FreeAndNil( Fdoc );
+    inherited;
+end;
+
+{*******************************************************************************
+* doOnDocumentComplete
+*******************************************************************************}
+procedure THtmlDocumentControl.doOnDocumentComplete();
+begin
+    inherited;
+
+    Fdoc.attachEvents( Fdom );
+end;
+
+{*******************************************************************************
+* applyHtml
+*******************************************************************************}
+procedure THtmlDocumentControl.applyHtml();
+begin
+    //Fdoc.saveToFile( '1.html' );
+    html := Fdoc.html;
+
+    inherited;
 end;
 
 end.

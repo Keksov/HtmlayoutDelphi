@@ -279,8 +279,8 @@ function  HTMLayoutSortElements( he : HELEMENT; firstIndex : UINT; lastIndex : U
 function  HTMLayoutSwapElements( he1 : HELEMENT; he2 : HELEMENT ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutTraverseUIEvent( evt : UINT; eventCtlStruct : POINTER; var bOutProcessed : BOOL ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutControlGetType( he : HELEMENT; var pType : UINT {HTMLayoutCtlType} ) : HLDOM_RESULT; stdcall;
-function  HTMLayoutControlGetValue( he : HELEMENT; var pVal : HtmlVALUE ) : HLDOM_RESULT; stdcall;
-function  HTMLayoutControlSetValue( he : HELEMENT; const pVal : PHtmlVALUE ) : HLDOM_RESULT; stdcall;
+function  HTMLayoutControlGetValue( he : HELEMENT; pVal : PRHtmlValue ) : HLDOM_RESULT; stdcall;
+function  HTMLayoutControlSetValue( he : HELEMENT; const pVal : PRHtmlValue ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutEnumerate( he : HELEMENT; pcb : HTMLayoutEnumerationCallback; p : POINTER; forward : BOOL ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutGetCharacterRect( he : HELEMENT; pos : UINT; var outRect : TRECT ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutEnumElementStyles( he : HELEMENT; callback : HTMLayoutStyleRuleCallback; callback_prm : Pointer ) : HLDOM_RESULT; stdcall;
@@ -290,7 +290,7 @@ function  HTMLayoutMoveElement( he : HELEMENT; xView, yView : integer ) : HLDOM_
 function  HTMLayoutMoveElementEx( he : HELEMENT; xView, yView, width, height : integer ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutAnimateElement( he : HELEMENT; pAnimator : HTMLayoutElementAnimator; animatorParam : Pointer ) : HLDOM_RESULT; stdcall;
 function  HTMLayoutEnqueueMeasure( he : HELEMENT ) : HLDOM_RESULT; stdcall;
-function  HTMLayoutParseValue( text : LPCWSTR; textLength : UINT; mode : UINT; var pVal : HtmlVALUE ) : UINT; stdcall;
+function  HTMLayoutParseValue( text : LPCWSTR; textLength : UINT; mode : UINT; pVal : PRHtmlValue ) : UINT; stdcall;
 
 implementation
 
@@ -371,8 +371,8 @@ function  HTMLayoutSortElements( he : HELEMENT; firstIndex : UINT; lastIndex : U
 function  HTMLayoutSwapElements( he1 : HELEMENT; he2 : HELEMENT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutTraverseUIEvent( evt : UINT; eventCtlStruct : POINTER; var bOutProcessed : BOOL ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutControlGetType( he : HELEMENT; var pType : UINT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
-function  HTMLayoutControlGetValue( he : HELEMENT; var pVal : HtmlVALUE ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
-function  HTMLayoutControlSetValue( he : HELEMENT; const pVal : PHtmlVALUE ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
+function  HTMLayoutControlGetValue( he : HELEMENT; pVal : PRHtmlValue ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
+function  HTMLayoutControlSetValue( he : HELEMENT; const pVal : PRHtmlValue ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutEnumerate( he : HELEMENT; pcb : HTMLayoutEnumerationCallback; p : POINTER; forward : BOOL ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutGetCharacterRect( he : HELEMENT; pos : UINT; var outRect : TRECT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutEnumElementStyles( he : HELEMENT; callback : HTMLayoutStyleRuleCallback; callback_prm : Pointer ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
@@ -382,7 +382,7 @@ function  HTMLayoutMoveElement( he : HELEMENT; xView, yView : integer ) : HLDOM_
 function  HTMLayoutMoveElementEx( he : HELEMENT; xView, yView, width, height : integer ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutAnimateElement( he : HELEMENT; pAnimator : HTMLayoutElementAnimator; animatorParam : Pointer ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
 function  HTMLayoutEnqueueMeasure( he : HELEMENT ) : HLDOM_RESULT; external HTMLayoutDLL; stdcall;
-function  HTMLayoutParseValue( text : LPCWSTR; textLength : UINT; mode : UINT; var pVal : HtmlVALUE ) : UINT; external HTMLayoutDLL; stdcall;
+function  HTMLayoutParseValue( text : LPCWSTR; textLength : UINT; mode : UINT; pVal : PRHtmlValue ) : UINT; external HTMLayoutDLL; stdcall;
 
 
 end.
