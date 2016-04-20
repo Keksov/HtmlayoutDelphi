@@ -15,7 +15,7 @@ type
     {***************************************************************************
     * THTMLLableView
     ***************************************************************************}
-    THTMLLableView = class( THTMLTagNode)
+    THTMLLableView = class( THTMLTagNode )
 public
     constructor Create( aDocument : THTMLDocView; aInitialContent : string = '' ); override;
 
@@ -92,7 +92,7 @@ implementation
 constructor THTMLLableView.Create( aDocument : THTMLDocView; aInitialContent : string = '' );
 begin
     inherited;
-    Ftag := 'span';
+    tag := 'span';
 end;
 
 {-- THTMLInput ----------------------------------------------------------------}
@@ -104,7 +104,7 @@ constructor THTMLInput.Create( aDocument : THTMLDocView; aInitialContent : strin
 begin
     inherited;
 
-    Ftag   := 'input';
+    tag   := 'input';
     Flabel := nil;
 end;
 

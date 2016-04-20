@@ -14,3 +14,10 @@
 .#*
 *.dcu
 *.hpp
+dcu
+*.exe
+*.dsm
+*.dof
+*.dsk
+*.ddp
+*.exe
