@@ -3,6 +3,7 @@ unit htmlNode;
 interface
 
 uses classes, sysutils, Contnrs
+    , toolsString
     , htmlUtils
     , htmlConst
     , HtmlElement
@@ -43,7 +44,7 @@ public // property
 
     THTMLNodeClass = class of THTMLNode;
 
-{-- THTMLTextNode --------------------------------------------------------------}
+{-- THTMLTextNode -------------------------------------------------------------}
 
     {***************************************************************************
     * THTMLTextNode
@@ -141,7 +142,8 @@ private
 protected
     //Fhtml                       : TStringList;
     // top level HTML tag, div by default
-    Ftag                        : string;
+    FopenTag                    : string;
+    FcloseTag                   : string;
     // objects ids, empty by default
     Fids                        : TStringList;
     // Delimiter used for list of ids, default '_' underscore
@@ -152,6 +154,10 @@ protected
     Fstyle                      : TStyleList;
     // misc attrs for the tag, empty by default
     Fattrs                      : TAttrList;
+    // open brace string, default '<'
+    FopenBrace                  : string;
+    // close brace string, default '>'
+    FcloseBrace                 : string;
 
 private
     function    getInnerHtml() : string;
@@ -161,6 +167,7 @@ private
     function    getEvents() : THtmlEventHandler;
     function    getAttribute( const aAttrName : string ) : string;
     procedure   setAttribute( const aAttrName, aValue : string );
+    procedure   setTag( const aTag : string );
 
     procedure   setInitializationHandler( aEventType : THtmlEventType; aHandler : HTMLElementInitializationEventHandler );
     function    getInitializationHandler( aEventType : THtmlEventType ) : HTMLElementInitializationEventHandler;
@@ -200,6 +207,8 @@ private
 
 protected
     function    getHtml() : string; override;
+    function    getChildrenHTML() : string; virtual;
+
     procedure   internalSetText( const aText : string ); override;
 
     function    getId() : string;
@@ -369,7 +378,7 @@ public // property
     property html : string read getHtml;
     property events : THtmlEventHandler read getEvents;
 
-    property tag : string read Ftag write Ftag;
+    property tag : string read FopenTag write setTag;
     property ids : string read getId write addId;
     property id : string read getId write setId;
     property cls : string read getClass write addClass;
@@ -447,7 +456,7 @@ protected
     function    addEventHandler( {aNodePtrAttr : string} ) : THtmlEventHandler;
 
 public
-    constructor Create( aInitialContent : string = '' ); reintroduce;
+    constructor Create( aInitialContent : string = '' ); reintroduce; virtual;
     destructor  Destroy(); override;
 
     procedure   attachEvents( aDomElement : THtmlElement );
@@ -468,7 +477,7 @@ implementation
 constructor THTMLStyleView.Create( aDocuemnt : THTMLDocView; aInitialContent : string = '' );
 begin
     inherited;
-    Ftag := 'style';
+    tag := 'style';
 end;
 
 {*******************************************************************************
@@ -558,7 +567,7 @@ end;
 constructor THTMLHeadView.Create( aDocuemnt : THTMLDocView; aInitialContent : string = '' );
 begin
     inherited;
-    Ftag := 'head';
+    tag := 'head';
 
     Fstyle := THTMLStyleView( children.addNode( THTMLStyleView, aInitialContent ) );
 end;
@@ -571,7 +580,7 @@ end;
 constructor THTMLBodyView.Create( aDocuemnt : THTMLDocView; aInitialContent : string = '' );
 begin
     inherited;
-    Ftag := 'body';
+    tag := 'body';
 end;
 
 {-- THTMLDocView --------------------------------------------------------------}
@@ -583,7 +592,7 @@ constructor THTMLDocView.Create( aInitialContent : string = '' );
 begin
     inherited Create( self, aInitialContent );
 
-    Ftag := 'html';
+    tag := 'html';
 
     Fhead := THTMLHeadView( children.addNode( THTMLHeadView, '' ) );
     Fbody := THTMLBodyView( children.addNode( THTMLBodyView, '' ) );
@@ -840,13 +849,13 @@ end;
 * Destroy
 *******************************************************************************}
 destructor THTMLNodeList.Destroy();
-var
-    i : integer;
+//var
+//    i : integer;
 begin
-    for  i := 0 to Count - 1 do
+    {for  i := 0 to Count - 1 do
     begin
         nodes[i].Free();
-    end;
+    end;}
 
     inherited;
 end;
@@ -898,7 +907,7 @@ end;
 *******************************************************************************}
 function THTMLNodeList.getHtml() : string;
 var
-    i    : integer;
+    i : integer;
 
     {***************************************************************************
     * html
@@ -955,12 +964,14 @@ end;
 *******************************************************************************}
 constructor THTMLTagNode.Create( aDocument : THTMLDocView; aText : string = '' );
 begin
-    Fchildren := nil;
-    Fevents   := nil;
-    
+    Fchildren   := nil;
+    Fevents     := nil;
+    FopenBrace  := '<';
+    FcloseBrace := '>';
+
     inherited Create( aDocument, aText );
 
-    Ftag     := 'div';
+    tag      := 'div';
     Fids     := TStringList.Create();
     Fclasses := TStringList.Create();
     Fstyle   := TStyleList.Create();
@@ -1000,7 +1011,16 @@ begin
 end;
 
 {*******************************************************************************
-* THTMLNodeList
+* setTag
+*******************************************************************************}
+procedure THTMLTagNode.setTag( const aTag : string );
+begin
+    FopenTag  := aTag;
+    FcloseTag := aTag;
+end;
+
+{*******************************************************************************
+* getChildren
 *******************************************************************************}
 function THTMLTagNode.getChildren() : THTMLNodeList;
 begin
@@ -1088,21 +1108,34 @@ begin
 end;
 
 {*******************************************************************************
-* getHTML
+* getChildrenHTML
 *******************************************************************************}
-function THTMLTagNode.getHTML() : string;
+function THTMLTagNode.getChildrenHTML() : string;
 var
     ch : string;
 
 begin
+    Result := '';
+    if ( Fchildren = nil ) then
+        exit;
+
     ch := '';
-    Result := tagOpen( Ftag, id, cls, Fstyle.text, Fattrs.text );
-    if ( Fchildren <> nil ) then
+    if ( Fchildren.Count > 0 ) then
     begin
-        ch := IfThen( Fchildren.Count = 1, ch, #10 );
-        Result := Result + ch + Fchildren.html;
+        ch := #10;
     end;
-    Result := Result + ch + tagClose( Ftag );
+
+    Result := Result + ch + Fchildren.html + ch;
+end;
+
+{*******************************************************************************
+* getHTML
+*******************************************************************************}
+function THTMLTagNode.getHTML() : string;
+begin
+    Result := tagOpen( FopenTag, id, cls, Fstyle.text, Fattrs.text, FopenBrace, FcloseBrace );
+    Result := Result + getChildrenHTML();
+    Result := Result + tagClose( FcloseTag, FopenBrace, FcloseBrace );
 end;
 
 {*******************************************************************************
@@ -1195,6 +1228,12 @@ end;
 *******************************************************************************}
 procedure THTMLTagNode.addClass( const aClass : string );
 begin
+    if ( aClass = '' ) then
+    begin
+        Fclasses.Clear();
+        exit;
+    end;
+
     Fclasses.Add( aClass );
 end;
 
@@ -1321,7 +1360,7 @@ begin
 end;
 
 {*******************************************************************************
-* INITIALIZATION
+* setInitializationHandler
 *******************************************************************************}
 procedure THTMLTagNode.setInitializationHandler( aEventType : THtmlEventType; aHandler : HTMLElementInitializationEventHandler );
 begin

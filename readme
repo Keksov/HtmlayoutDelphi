@@ -28,8 +28,12 @@ http://www.terrainformatica.com/htmlayout/tagsattributes.whtm
 * HTMLayout specific tags:
 http://www.terrainformatica.com/htmlayout/tags.whtm
 
+* CSS Attributes support map
+http://www.terrainformatica.com/htmlayout/cssmap.whtm
+
 * CSS Selectors in HTMLayout
 http://www.terrainformatica.com/htmlayout/selectors.whtm
+Note: E:last-child Matches element E when E is the last child of its parent.
 
 *CSS transition docs
 <SDK folder>/html_samples/transitions/!transition-doc.htm

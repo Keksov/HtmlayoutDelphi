@@ -135,12 +135,12 @@ function  IfThen( aCondition : boolean; const aTrueExpr : int64; aFalseExpr : in
 function  IfThen( aCondition : boolean; const aTrueExpr : boolean; aFalseExpr : boolean ) : boolean; overload;
 
 
-function  tagOpen( const aTag, aId, aClass, aStyle, aAttrs : string ) : string;
-function  tagClose( const aTag : string ) : string;
-function  tag( const aTag, aId, aClass, aStyle, aAttrs, aText : string ) : string; overload;
-function  tag( const aTag, aId, aClass, aStyle, aText : string ) : string; overload;
-function  tag( const aTag, aId, aText : string ) : string; overload;
-function  tag( const aTag, aText : string ) : string; overload;
+function  tagOpen( const aTag, aId, aClass, aStyle, aAttrs : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
+function  tagClose( const aTag : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
+function  tag( const aTag, aId, aClass, aStyle, aAttrs, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string; overload;
+//function  tag( const aTag, aId, aClass, aStyle, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string; overload;
+function  tag( const aTag, aId, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string; overload;
+function  tag( const aTag, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string; overload;
 
 function  nl2br( const aString : string ) : string;
 function  nobr( const aText : string ) : string;
@@ -179,49 +179,49 @@ end;
 {*******************************************************************************
 * tagOpen
 *******************************************************************************}
-function tagOpen( const aTag, aId, aClass, aStyle, aAttrs : string ) : string;
+function tagOpen( const aTag, aId, aClass, aStyle, aAttrs : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
 begin
-    Result := '<' + aTag + s_id( aId ) + s_class( aClass ) + s_style( aStyle ) + aAttrs + '>';
+    Result := aOpenBrace + aTag + s_id( aId ) + s_class( aClass ) + s_style( aStyle ) + aAttrs + aCloseBrace;
 end;
 
 {*******************************************************************************
 * tagClose
 *******************************************************************************}
-function tagClose( const aTag : string ) : string;
+function tagClose( const aTag : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
 begin
-    Result := '</' + aTag + '>';
+    Result := aOpenBrace + '/' + aTag + aCloseBrace;
 end;
 
 {*******************************************************************************
 * tag
 *******************************************************************************}
-function tag( const aTag, aId, aClass, aStyle, aAttrs, aText : string ) : string;
+function tag( const aTag, aId, aClass, aStyle, aAttrs, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
 begin
-    Result := tagOpen( aTag, aId, aClass, aStyle, aAttrs ) + aText + tagClose( aTag );
+    Result := tagOpen( aTag, aId, aClass, aStyle, aAttrs, aOpenBrace, aCloseBrace ) + aText + tagClose( aTag );
 end;
 
 {*******************************************************************************
 * tag
 *******************************************************************************}
-function tag( const aTag, aId, aClass, aStyle, aText : string ) : string;
+{function tag( const aTag, aId, aClass, aStyle, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
 begin
-    Result := tag( aTag, aId, aClass, aStyle, '', aText );
+    Result := tag( aTag, aId, aClass, aStyle, '', aText, aOpenBrace, aCloseBrace );
+end;}
+
+{*******************************************************************************
+* tag
+*******************************************************************************}
+function tag( const aTag, aId, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
+begin
+    Result := tag( aTag, aId, '', '', '', aText, aOpenBrace, aCloseBrace );
 end;
 
 {*******************************************************************************
 * tag
 *******************************************************************************}
-function tag( const aTag, aId, aText : string ) : string;
+function tag( const aTag, aText : string; aOpenBrace : string = '<'; aCloseBrace : string = '>' ) : string;
 begin
-    Result := tag( aTag, aId, '', '', '', aText );
-end;
-
-{*******************************************************************************
-* tag
-*******************************************************************************}
-function tag( const aTag, aText : string ) : string;
-begin
-    Result := tag( aTag, '', '', '', '', aText );
+    Result := tag( aTag, '', '', '', '', aText, aOpenBrace, aCloseBrace );
 end;
 
 {***************************************************************************

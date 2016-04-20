@@ -57,7 +57,7 @@ private
     FshowSelection              : boolean; // default false, see HTMLayoutModes (HtmlLayoutH.pas)
 
 private
-    function    HtmlCallback(uMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
+    function    HtmlCallback( uMsg : UINT; wParam : WPARAM; lParam : LPARAM ) : LRESULT;
 
     function    getWideHtml() : widestring;
     procedure   setWideHtml( const aHtml : widestring );
@@ -124,7 +124,7 @@ class function  DeclareElementType( aName : PCHAR; aElementModel : HTMLayoutElem
 class function  UrlEscape( aText : PWideChar; aSpaceToPlus : boolean; aBuffer : PCHAR; aBufferLength : cardinal ) : cardinal;
 class function  UrlUnescape( aUrl : PChar; aBuffer : PWideChar; aBufferLength : cardinal ) : cardinal;
     function    Dialog( aPosition : TPoint; aAlignment : integer; aStyle : cardinal; aStyleEx : cardinal; aDialogCallback : HTMLayoutNotify;
-                        aElCallback : HTMLayoutElementEventProc; aCallbackParam : Pointer; aHtml : PCHAR; aHtmlLength : cardinal ) : integer;
+                        aElCallback : HTMLayoutElementEventProc; aCallbackParam : Pointer; aHtml : PCHAR; aHtmlLength : cardinal ) : INT_PTR;
     procedure   SetupDebugOutput( aParam : Pointer; aPFOutput : HTMLAYOUT_DEBUG_OUTPUT_PROC );
 
 public // property
@@ -267,7 +267,7 @@ end;
 {*******************************************************************************
 * Create
 *******************************************************************************}
-constructor THtmlControl.Create(AOwner: TComponent);
+constructor THtmlControl.Create( AOwner : TComponent );
 begin
     inherited Create( AOwner );
 
@@ -846,7 +846,7 @@ end;
 * Dialog
 *******************************************************************************}
 function THtmlControl.Dialog( aPosition : TPoint; aAlignment : integer; aStyle : cardinal; aStyleEx : cardinal; aDialogCallback : HTMLayoutNotify;
-                        aElCallback : HTMLayoutElementEventProc; aCallbackParam : Pointer; aHtml : PCHAR; aHtmlLength : cardinal ) : integer;
+                        aElCallback : HTMLayoutElementEventProc; aCallbackParam : Pointer; aHtml : PCHAR; aHtmlLength : cardinal ) : INT_PTR;
 begin
     Result := HTMLayoutDialog( Handle, aPosition, aAlignment, aStyle, aStyleEx, aDialogCallback, aElCallback, aCallbackParam, aHtml, aHtmlLength );
 end;

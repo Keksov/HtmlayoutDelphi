@@ -38,8 +38,9 @@ public
     constructor Create( aDocument : THTMLDocView; aInitialContent : string = '' );  override;
     destructor  Destroy(); override;
 
-    procedure   addText( aValues : array of string ); override;
-
+    procedure   addText( aValues : array of string ); overload; override;
+    procedure   addTD( const aText : string; aCls : string = '' );
+    
     end;
 
 {-- THTMLTableView ------------------------------------------------------------}
@@ -74,7 +75,7 @@ implementation
 constructor THTMLTableViewTD.Create( aDocument : THTMLDocView; aInitialContent : string = '' );
 begin
     inherited;
-    Ftag := 'td';
+    tag := 'td';
 end;
 
 {*******************************************************************************
@@ -93,7 +94,7 @@ end;
 constructor THTMLTableViewTR.Create( aDocument : THTMLDocView; aInitialContent : string = '' );
 begin
     inherited;
-    Ftag := 'tr';
+    tag := 'tr';
     FtdClass := THTMLTableViewTD;
 end;
 
@@ -123,6 +124,21 @@ begin
     FreeAndNil( td );
 end;
 
+{*******************************************************************************
+* addTD
+*******************************************************************************}
+procedure THTMLTableViewTR.addTD( const aText : string; aCls : string = '' );
+var
+    td : THTMLTableViewTD;
+begin
+    td := FtdClass.Create( Fdocument );
+    td.innerHtml := aText;
+    td.cls := aCls;
+    
+    addHtml( td );
+    FreeAndNil( td );
+end;
+
 {-- THTMLTableView ------------------------------------------------------------}
 
 {*******************************************************************************
@@ -132,7 +148,7 @@ constructor THTMLTableView.Create( aDocument : THTMLDocView; aInitialContent : s
 begin
     inherited;
 
-    Ftag := 'table';
+    tag := 'table';
     FtrClass := THTMLTableViewTR;
 end;
 

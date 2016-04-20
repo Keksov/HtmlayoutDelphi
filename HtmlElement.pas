@@ -859,7 +859,7 @@ public
 
 class function  get( aHandler : HELEMENT ) : THtmlShim; overload;
 class function  get( aElement : THtmlElement ) : THtmlShim; overload;
-
+class function  get( aHwnd : HWND ) : THtmlShim; overload;
 class function  getId( aHandler : HELEMENT ) : widestring;
 
 public // property
@@ -2155,12 +2155,17 @@ end;
 *******************************************************************************}
 function THtmlHElement.get_value() : RHtmlValue;
 begin
+    // ATTENTION:
+    // ATTENTION:
+    // ATTENTION: ValueClear(pVal); must be called at some point HTMLayoutControlGetValue use.
+    // ATTENTION:
+    // ATTENTION:
+
     assert( is_valid() );
     FlastError := HTMLayoutControlGetValue( Fhandler, @Result );
     assert( FlastError = HLDOM_OK );
     if ( FlastError <> HLDOM_OK ) then
         exit;
-
 end;
 
 {*******************************************************************************
@@ -3186,6 +3191,20 @@ end;
 class function THtmlShim.get( aElement : THtmlElement ) : THtmlShim;
 begin
     Result := get( aElement.Fhandler );
+end;
+
+{*******************************************************************************
+* getRoot
+*******************************************************************************}
+class function THtmlShim.get( aHwnd : HWND ) : THtmlShim;
+var
+    root : HELEMENT;
+    res : HLDOM_RESULT;
+begin
+    res := HTMLayoutGetRootElement( aHwnd, root );
+    assert( res = HLDOM_OK );
+
+    Result := THtmlShim.get( root );
 end;
 
 {*******************************************************************************

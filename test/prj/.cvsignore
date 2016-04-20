@@ -14,4 +14,9 @@
 .#*
 *.dcu
 *.hpp
-*.git*
+dcu
+*.dsm
+*.dof
+*.dsk
+*.ddp
+*.exe

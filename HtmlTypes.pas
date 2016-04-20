@@ -19,8 +19,17 @@ type
     PHELEMENT = ^HELEMENT;
 
     LPCBYTE = PCHAR;
-    INT_PTR = integer;
+    INT_PTR = ^integer;
 
+    LPVOID = Pointer;
+    PLPVOID = ^LPVOID;
+    LPINT = ^integer;
+    LPBOOL = PBOOL;
+    LPNMHDR = PNMHDR;
+    UINT_PTR = ^cardinal;
+    LPUINT = UINT_PTR;
+    
+    PRECT = ^TRECT;
 implementation
 
 end.
