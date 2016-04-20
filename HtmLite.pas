@@ -136,34 +136,18 @@ public
 
 implementation
 
-const
-    MMPerInch = 25.4;
-
 var
     ProxyWindow : TProxyWindow;
     FhScreenPPI : double;
     FvScreenPPI : double;
 
-{*****************************************************************************
-*  GetDeviceHorSize
-******************************************************************************}
-procedure uniGetDeviceSize( aDc : HDC; var aWidth, aHeight : integer );
-begin
-    aWidth := GetDeviceCaps( aDc, HORZSIZE );
-    aHeight := GetDeviceCaps( aDc, VERTSIZE );
-    exit;
-
-    if ( GetPrimaryMonitorTrueSize( aWidth, aHeight ) ) then
-        exit;
-
-    aWidth := GetDeviceCaps( aDc, HORZSIZE );
-    aHeight := GetDeviceCaps( aDc, VERTSIZE );
-end;
-
-{*****************************************************************************
+{*******************************************************************************
 * CalculateDisplayPixelPerInch
-******************************************************************************}
+*******************************************************************************}
 procedure CalculateDisplayPixelPerInch();
+const
+    MMPerInch = 25.4;
+
 var
     screenDc : HDC;
     hRes, vRes : integer;
@@ -173,10 +157,16 @@ begin
     screenDc := getDC(0);
 
     try
+        if ( not GetPrimaryMonitorTrueSize( hSize, vSize ) ) then
+        begin
+            FhScreenPPI := GetDeviceCaps( screenDc, LOGPIXELSX );
+            FvScreenPPI := GetDeviceCaps( screenDc, LOGPIXELSY );
+
+            exit;
+        end;
+
         hRes := GetDeviceCaps( screenDc, HORZRES );
         vRes := GetDeviceCaps( screenDc, VERTRES );
-
-        uniGetDeviceSize( screenDc, hSize, vSize );
 
         FhScreenPPI := ( MMPerInch * hRes / hSize );
         FvScreenPPI := ( MMPerInch * vRes / vSize );

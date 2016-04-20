@@ -207,37 +207,40 @@ uses StrUtils, SysUtils, RTLConsts;
 
 function GetMonitorSizeFromEDID(hDevRegKey: HKEY; var mmWidth, mmHeight: integer): Boolean;
 var
-  dwType, ActualValueNameLength: dword;
-  buffer: array[0..511] of Char;
-  ValueName: PChar;
-  EDIDdata: array[0..2047] of byte;
-  EDIDsize: dword;
-  RetValue: integer;
-  ValueIndex: integer;
+    dwType : dword;
+    ActualValueNameLength : dword;
+    buffer : array[0..511] of Char;
+    ValueName: PChar;
+    EDIDdata : array[0..2047] of byte;
+    EDIDsize : dword;
+    RetValue : integer;
+    ValueIndex : integer;
+
 begin
-  Result:= False;
-  EDIDsize:= SizeOf(EDIDdata);
-  ValueIndex:= 0;
-  ValueName:= @buffer[0];
-  ActualValueNameLength:= SizeOf(buffer);
-  RetValue:= ERROR_SUCCESS;
-  while (RetValue = ERROR_SUCCESS) or (RetValue <> ERROR_NO_MORE_ITEMS) do
-  begin
-    // перебираем узлы
-    RetValue:= RegEnumValue(hDevRegKey,ValueIndex,ValueName,
-      ActualValueNameLength,nil,@dwType,@EDIDdata, @EDIDsize);
+    Result := False;
+    EDIDsize := SizeOf(EDIDdata);
+    ValueIndex := 0;
+    ValueName := @buffer[0];
+    ActualValueNameLength := SizeOf(buffer);
+    RetValue := ERROR_SUCCESS;
 
-    Inc(ValueIndex);
+    while ( RetValue = ERROR_SUCCESS ) or ( RetValue <> ERROR_NO_MORE_ITEMS ) do
+    begin
+        // перебираем узлы
+        RetValue := RegEnumValue( hDevRegKey, ValueIndex, ValueName, ActualValueNameLength, nil, @dwType, @EDIDdata, @EDIDsize );
 
-    if (RetValue <> ERROR_SUCCESS) or (ValueName <> 'EDID') then
-      Continue;
-    // https://ru.wikipedia.org/wiki/Extended_display_identification_data
-    mmWidth:= ((EDIDdata[68] and $F0) shl 4) + EDIDdata[66];
-    mmHeight:= ((EDIDdata[68] and $0F) shl 8) + EDIDdata[67];
+        inc( ValueIndex );
 
-    Result:= True;
-    Exit;
-  end;
+        if ( RetValue <> ERROR_SUCCESS ) or ( ValueName <> 'EDID' ) then
+            continue;
+
+        // https://ru.wikipedia.org/wiki/Extended_display_identification_data
+        mmWidth := ((EDIDdata[68] and $F0) shl 4) + EDIDdata[66];
+        mmHeight := ((EDIDdata[68] and $0F) shl 8) + EDIDdata[67];
+
+        Result:= True;
+        Exit;
+    end;
 end;
 
 function GetDevInfo(const DevGUID: TGUID; out hDevInfo: HDEVINFO): Boolean;
