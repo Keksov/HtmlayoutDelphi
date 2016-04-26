@@ -25,6 +25,7 @@ private
 
 protected
     function    getHtml() : string; virtual;
+    procedure   setHtml( const aValue : string ); virtual;
 
     function    QueryInterface( const IID : TGUID; out Obj ) : HResult; stdcall;
     function    _AddRef() : integer; stdcall;
@@ -151,6 +152,14 @@ end;*)
 function THTMLStyleElement.getHtml() : string;
 begin
     Result := Felement + '{' + inherited internalGetText() + '}';
+end;
+
+{*******************************************************************************
+* setHtml
+*******************************************************************************}
+procedure THTMLStyleElement.setHtml( const aValue : string );
+begin
+    assert( false, 'Implement me' );
 end;
 
 

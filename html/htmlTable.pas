@@ -133,7 +133,7 @@ var
 begin
     td := FtdClass.Create( Fdocument );
     td.innerHtml := aText;
-    td.cls := aCls;
+    td.addClass( aCls );
     
     addHtml( td );
     FreeAndNil( td );

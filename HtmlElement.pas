@@ -21,7 +21,6 @@ uses Windows, sysutils, Contnrs, graphics
     , HtmlValueH
     , HtmlValue
     , unisSVG
-    , toolsString
     , htmlConst
 ;
 

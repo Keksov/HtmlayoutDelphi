@@ -12,7 +12,7 @@ interface
 {$IFDEF USER_DEFINES_INC}{$I user_defines.inc}{$ENDIF}
 
 uses Windows, classes, sysutils
-    , HtmlCtrl
+//    , HtmlCtrl
     , HtmlLayoutH
     , HtmlElement
     , HtmlTypes
@@ -30,15 +30,18 @@ type
     THtmlBehaviorSVG = class
 
 protected
-    function    onBehaviorAttach( aSender : THtmlControl; aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
+    function    onBehaviorAttach( aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
 
-protected
-    procedure   internalAttach( aHtmlControl : THtmlControl );
+//protected
+//    procedure   internalAttach( aHtmlControl : THtmlControl );
 
-public
+//public
     //constructor Create();
 
-class procedure attach( aHtmlControl : THtmlControl );
+//class procedure attach( aHtmlControl : THtmlControl );
+public
+//    class function behaviorAttach( aSender : THtmlControl; aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
+    class function behaviorAttach( aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
 
     end;
 
@@ -50,7 +53,7 @@ var
 {*******************************************************************************
 * attach
 *******************************************************************************}
-class procedure THtmlBehaviorSVG.attach( aHtmlControl : THtmlControl );
+(*class procedure THtmlBehaviorSVG.attach( aHtmlControl : THtmlControl );
 begin
     GlobalSVG.internalAttach( aHtmlControl );
 end;
@@ -63,7 +66,7 @@ begin
     assert( aHtmlControl <> nil );
 
     aHtmlControl.OnAttachBehavior := onBehaviorAttach;
-end;
+end;*)
 
 {*******************************************************************************
 * OnDraw
@@ -71,10 +74,10 @@ end;
 function OnDraw( aTag : Pointer; he : HELEMENT; aEventGroup: UINT; aEventParams : Pointer ) : BOOL stdcall;
 var
     el : THtmlShim;
-    drawParams  : PHTMLayoutDrawParams;
     svg : TSVG;
     dataId : string;
     dataBody : WideString;
+    drawParams : PHTMLayoutDrawParams;
 
 begin
     Result := ( PHTMLayoutDrawParams( aEventParams ).cmd = DRAW_CONTENT );
@@ -93,30 +96,13 @@ begin
             if ( not el.is_valid() ) then
                 exit;
 
-
             if ( el = nil ) then
                 exit;
 
-            //svg.LoadFromFile( 'c:\projects\traffic_build\trafficrun\tsetc.chelyabinsk\Знаки индивидуального проектирования\1.svg' );
             dataBody := el.innerText16;
 
             svg.LoadFromText( dataBody );
             svg.PaintTo( drawParams.hdc, drawParams.area );
-{            svg.LoadFromText( el.innerText );
-            svg.LoadFromText( el.innerText16 );
-
-            svg.LoadFromText( el.outerHtml );
-
-            svg.LoadFromText( el.innerText );
-            svg.LoadFromText( el.innerText16 );
-            svg.LoadFromText( el.innerHtml );
-            svg.LoadFromText( el.outerHtml );
-
-            if ( el.childrenCount <> 0 ) then
-                if ( el.childrenCount <> 0 ) then;
-
-            if ( el.tag <> '' ) then
-                if ( el.tag <> '' ) then;}
         except
             on e : Exception do
                 if ( e.message <> '' ) then;
@@ -134,9 +120,18 @@ begin
 end;
 
 {*******************************************************************************
+* behaviorAttach
+*******************************************************************************}
+class function THtmlBehaviorSVG.behaviorAttach( aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
+begin
+    Result := GlobalSVG.onBehaviorAttach( aEventParams );
+end;
+
+{*******************************************************************************
 * onBehaviorAttach
 *******************************************************************************}
-function THtmlBehaviorSVG.onBehaviorAttach( aSender : THtmlControl; aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
+//function THtmlBehaviorSVG.onBehaviorAttach( aSender : THtmlControl; aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
+function THtmlBehaviorSVG.onBehaviorAttach( aEventParams : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
 begin
     Result := 0;
     if ( aEventParams.behaviorName <> 'svg' ) then

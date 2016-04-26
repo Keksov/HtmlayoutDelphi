@@ -17,6 +17,7 @@ type
     function    getSelf() : TObject;
 
     function    getHtml() : string;
+    procedure   setHtml( const aValue : string );
     procedure   clear();
     
     end;

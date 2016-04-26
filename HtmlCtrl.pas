@@ -18,6 +18,7 @@ uses Windows, Messages, SysUtils, Classes, Controls
     , HtmlTypes
     , HtmlLayoutH
     , HtmlLayoutDomH
+    , HtmlBehaviorH
     , HtmlValueH
     , HtmlElement
     , htmlNode
@@ -40,6 +41,9 @@ type
     * THtmlControl
     ***************************************************************************}
     THtmlControl = class( TWinControl )
+private
+    FdomEvents                     : THTMLayoutEvent;
+
 private
     FOnCreateControl            : THtmlCtrlCreateControl; // HLN_CREATE_CONTROL
     FOnLoadData                 : THtmlCtrlLoadData; // HLN_LOAD_DATA
@@ -83,6 +87,7 @@ protected
 
 public
     constructor Create( AOwner : TComponent ); override;
+    destructor  Destroy(); override;
 
     function    LoadHtml( const aHtml : string ) : boolean; overload;
     function    LoadHtml( const aHtml : widestring ) : boolean; overload;
@@ -134,6 +139,7 @@ public // property
     property html : string read getAnsiHtml write setAnsiHtml;
     property hroot : HELEMENT read GetRootElement;
     property showSelection : boolean read FshowSelection write FshowSelection;
+    property domEvents : THTMLayoutEvent read FdomEvents;
 
 published
     property Action;
@@ -231,6 +237,8 @@ public // property
 
 implementation
 
+uses HtmlBehaviorSVG;
+
 //uses HtmlTest; // Just for testing
 //uses HtmlTestEvents2;
 
@@ -271,7 +279,17 @@ constructor THtmlControl.Create( AOwner : TComponent );
 begin
     inherited Create( AOwner );
 
+    FdomEvents := THTMLayoutEvent.Create();
     FshowSelection := false;
+end;
+
+{*******************************************************************************
+* Destroy
+*******************************************************************************}
+destructor THtmlControl.Destroy();
+begin
+    FreeAndNil( FdomEvents );
+    inherited;
 end;
 
 {*******************************************************************************
@@ -312,9 +330,8 @@ begin
 
         case Message.Msg of
         WM_CREATE:
-            begin
-                SetCallback( HtmlCallbackProxy, self );
-            end;
+            SetCallback( HtmlCallbackProxy, self );
+
         end;
 
         inherited WndProc( Message );
@@ -388,6 +405,8 @@ begin
     begin
         FOnDocumentComplete( self );
     end;
+
+    FdomEvents.attach( hroot );
 end;
 
 {*******************************************************************************
@@ -418,6 +437,8 @@ end;
 *******************************************************************************}
 function THtmlControl.doOnAttachBehavior( lParam : PNMHL_ATTACH_BEHAVIOR ) : LRESULT;
 begin
+    THtmlBehaviorSVG.behaviorAttach( lParam );
+
     Result := 0;
     if Assigned( FOnAttachBehavior ) then
     begin

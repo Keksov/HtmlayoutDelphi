@@ -3,7 +3,7 @@ unit htmlNode;
 interface
 
 uses classes, sysutils, Contnrs
-    , toolsString
+//    , toolsString
     , htmlUtils
     , htmlConst
     , HtmlElement
@@ -32,10 +32,12 @@ protected
 
     constructor Create( aDocument : THTMLDocView; aText : string = '' ); virtual;// abstract;
     function    getHtml() : string; virtual; abstract;
+    procedure   setHtml( const aValue : string ); virtual; abstract;
     procedure   clear(); virtual; abstract;
 
 public
     procedure   saveToFile( const aFileName : string );
+    procedure   loadFromFile( const aFileName : string );
 
 public // property
     property document : THTMLDocView read Fdocument;
@@ -216,9 +218,9 @@ protected
     procedure   setId( const aId : string );
 
     function    getClass() : string;
-    procedure   addClass( const aClass : string );
+    procedure   setClass_( const aClass : string );
 
-    procedure   setAttr( aAttr : EHTMLAttributes; const aValue : string );
+    procedure   setAttr_( aAttr : EHTMLAttributes; const aValue : string );
     function    getAttr( aAttr : EHTMLAttributes ) : string;
 
     procedure   setIntAttr( aAttr : EHTMLAttributes; const aValue : integer );
@@ -257,6 +259,10 @@ public
 
     procedure   addNode( aNode : IHTMLNode ); overload; virtual;
     procedure   addNodes( aNodes : array of IHTMLNode ); overload; virtual;
+
+    procedure   addClass( const aClass : string );
+    function    setClass( const aClass : string ) : THTMLTagNode;
+    function    setAttr( const aAttrName, aValue : string ) : THTMLTagNode;
 
 public // events
     property onInitialization : HTMLElementInitializationEventHandler index etINITIALIZATION_ALL read getInitializationHandler write setInitializationHandler;
@@ -381,12 +387,14 @@ public // property
     property tag : string read FopenTag write setTag;
     property ids : string read getId write addId;
     property id : string read getId write setId;
-    property cls : string read getClass write addClass;
+    property cls : string read getClass write setClass_;
     property attrs : TAttrList read Fattrs;
     property attribute[ const aAttrName : string ] : string read getAttribute write setAttribute; default; // just a shortcut for attrs
     property style : TStyleList read Fstyle;
     property children : THTMLNodeList read getChildren;
     property childrenCount : integer read getChildrenCount;
+
+public // propetry some common attrs
 
     end;
 
@@ -452,6 +460,9 @@ protected
     Fbody                       : THTMLBodyView;
     FdomEvents                  : TObjectList;
 
+private
+    function    getStyle() : THTMLStyleView;
+
 protected
     function    addEventHandler( {aNodePtrAttr : string} ) : THtmlEventHandler;
 
@@ -464,6 +475,7 @@ public
 public // property
     property head : THTMLHeadView read Fhead;
     property body : THTMLBodyView read Fbody;
+    property style : THTMLStyleView read getStyle;
 
     end;
 
@@ -612,6 +624,14 @@ begin
 end;
 
 {*******************************************************************************
+* getStyle
+*******************************************************************************}
+function THTMLDocView.getStyle() : THTMLStyleView;
+begin
+    Result := head.style;
+end;
+
+{*******************************************************************************
 * THTMLDocView
 *******************************************************************************}
 function THTMLDocView.addEventHandler( {aNodePtrAttr : string} {aNode : THTMLTagNode} ) : THtmlEventHandler;
@@ -706,7 +726,7 @@ begin
         Flags := Flags or fmCreate;
     end;
 
-    fs := TFileStream.Create( aFileName, Flags);
+    fs := TFileStream.Create( aFileName, Flags );
     try
         s := getHtml();
         fs.Position := 0;
@@ -715,6 +735,14 @@ begin
     finally
         FreeAndNil( fs );
     end;
+end;
+
+{*******************************************************************************
+* loadFromFile
+*******************************************************************************}
+procedure THTMLNode.loadFromFile( const aFileName : string );
+begin
+    setHtml( ReadFileContent( aFileName ) );
 end;
 
 {-- THTMLTextNode -----------------------------------------------------------}
@@ -1133,7 +1161,7 @@ end;
 *******************************************************************************}
 function THTMLTagNode.getHTML() : string;
 begin
-    Result := tagOpen( FopenTag, id, cls, Fstyle.text, Fattrs.text, FopenBrace, FcloseBrace );
+    Result := tagOpen( FopenTag, id, getClass(), Fstyle.text, Fattrs.text, FopenBrace, FcloseBrace );
     Result := Result + getChildrenHTML();
     Result := Result + tagClose( FcloseTag, FopenBrace, FcloseBrace );
 end;
@@ -1164,9 +1192,9 @@ begin
 end;
 
 {*******************************************************************************
-* setAttr
+* setAttr_
 *******************************************************************************}
-procedure THTMLTagNode.setAttr( aAttr : EHTMLAttributes; const aValue : string );
+procedure THTMLTagNode.setAttr_( aAttr : EHTMLAttributes; const aValue : string );
 begin
     internalSetAttr( aAttr, aValue );
 end;
@@ -1229,12 +1257,36 @@ end;
 procedure THTMLTagNode.addClass( const aClass : string );
 begin
     if ( aClass = '' ) then
-    begin
-        Fclasses.Clear();
         exit;
-    end;
 
     Fclasses.Add( aClass );
+end;
+
+{*******************************************************************************
+* setClass
+*******************************************************************************}
+procedure THTMLTagNode.setClass_( const aClass : string );
+begin
+    Fclasses.Clear();
+    Fclasses.Add( aClass );
+end;
+
+{*******************************************************************************
+* setClass
+*******************************************************************************}
+function THTMLTagNode.setClass( const aClass : string ) : THTMLTagNode;
+begin
+    Result := self;
+    setClass_( aClass );
+end;
+
+{*******************************************************************************
+* setAttr
+*******************************************************************************}
+function THTMLTagNode.setAttr( const aAttrName, aValue : string ) : THTMLTagNode;
+begin
+    Result := self;
+    setAttribute( aAttrName, aValue );
 end;
 
 {*******************************************************************************

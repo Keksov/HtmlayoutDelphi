@@ -150,6 +150,8 @@ function  span( const aText : string; aId : string = ''; aClass : string = ''; a
 function  tr( const aInnerHTML : string; aId : string = ''; aClass : string = ''; aStyle : string = ''; aAttrs : string = '' ) : string;
 function  td( const aInnerHTML : string; aId : string = ''; aClass : string = ''; aStyle : string = ''; aAttrs : string = '' ) : string;
 
+function  ReadFileContent( const aFileName : string ) : string;
+
 implementation
 
 {***************************************************************************
@@ -753,6 +755,44 @@ end;
 function TAttrList.hasAttr( const aAttr : string ) : boolean;
 begin
     Result := ( getAttrDeclaration( aAttr ) <> nil );
+end;
+
+{*******************************************************************************
+* ReadFileContent
+*******************************************************************************}
+function ReadFileContent( const aFileName : string ) : string;
+var
+    fs : TFileStream;
+    buf : PChar;
+    len : integer;
+    flags : Word;
+
+begin
+    Result := '';
+
+    buf := nil;
+    flags := fmOpenRead;
+    if not FileExists( aFileName ) then
+        exit;
+
+    fs := TFileStream.Create( aFileName, Flags );
+    try
+        if ( fs.Size < 1 ) then
+            exit;
+
+        GetMem( buf, fs.Size );
+
+        fs.Position := 0;
+        len := fs.Read( buf^, fs.Size );
+        if ( buf = #0 ) then
+            exit;
+
+        SetString( Result, buf, len );
+//        UniqueString( Result );
+    finally
+        FreeAndNil( fs );
+        FreeMem( buf );
+    end;
 end;
 
 end.

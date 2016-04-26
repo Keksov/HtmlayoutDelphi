@@ -44,7 +44,7 @@ public
 
 public // property
     property lable : THTMLLableView read getLabel; // labEl is a keyword in Pascal
-    property value : string index HTML_ATTR_VALUE read getAttr write setAttr;
+    property value : string index HTML_ATTR_VALUE read getAttr write setAttr_;
 
     end;
 

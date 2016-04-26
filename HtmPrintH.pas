@@ -47,7 +47,7 @@ type
 // resource referred in this document - image, script or CSS.
 //
 // return FALSE if you dont want to load any images
-// return TRUE if you want image to be provessed. You may call set_data_ready() to supply your own
+// return TRUE if you want image to be processed. You may call set_data_ready() to supply your own
 // image or css content
 // 
 // While handling this callback host application may call HTMPrintSetDataReady

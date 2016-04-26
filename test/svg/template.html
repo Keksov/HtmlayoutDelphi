@@ -1,0 +1,19 @@
+<html><head>
+<style>
+body { margin: 0px; padding: 0px; background-color: white; }
+.svg {
+    behavior: svg; // this is the only critical style definition for SVG
+    display: inline-block; padding: 0px; margin: 0px;
+    width: 100px; height: 100px;
+}
+</style>
+
+<!-- Every svg data need a uniq ID. In our case it's "svgData" -->
+<script id="svgData" type="text/xml" >
+{{svgData}}
+</script>
+
+</head><body>
+    // Set class to svg (see above in style section) and specify source of SVG data using CSS selector (ID in our case)
+    <div class="svg" data="script#svgData"/>
+</body></html>

@@ -598,10 +598,153 @@ public
     ***************************************************************************}
     THTMLayoutEvent = class
 protected
-    Fevents                     : TObjectList; // lits of THTMLayoutEventHandler
+    // top element in DOM
+    FdomElement                 : HELEMENT;
+    // lits of THTMLayoutEventHandler
+    Fevents                     : TObjectList;
+
+private
+
+{-- INITIALIZATION ------------------------------------------------------------}
+
+procedure   setOnInitialization( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler );
+procedure   setOnBehaviorDetach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler );
+procedure   setOnBehaviorAttach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler );
+
+{-- MOUSE ---------------------------------------------------------------------}
+
+procedure   setOnMouse( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseTick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseIdle( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnDrop( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnDragEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnDragLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnDragRequest( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDraggingEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDraggingLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDraggingMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDraggingUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+procedure   setOnMouseDraggingDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+    
+{-- KEY ----------------------------------------------------------------------}
+
+procedure   setOnKey( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+procedure   setOnKeyDown( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+procedure   setOnKeyUp( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+procedure   setOnKeyChar( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+
+{-- FOCUS ---------------------------------------------------------------------}
+
+procedure   setOnFocus( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler );
+procedure   setOnFocusLost( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler );
+procedure   setOnFocusGot( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler );
+
+{-- SCROLL --------------------------------------------------------------------}
+
+procedure   setOnScroll( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollHome( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollEnd( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollStepPlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollStepMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollPagePlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollPageMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollPos( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+procedure   setOnScrollSliderReleased( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+
+{-- TIMER ---------------------------------------------------------------------}
+
+procedure   setOnTimer( const aCssSelector : string; aUserEventHandler : HTMLTimerEventHandler );
+
+{-- SIZE ---------------------------------------------------------------------}
+
+procedure   setOnSize( const aCssSelector : string; aUserEventHandler : HTMLSizeEventHandler );
+
+{-- HANDLE_DATA_ARRIVED -------------------------------------------------------}
+
+procedure   setOnDataArrived( const aCssSelector : string; aUserEventHandler : HTMLDataArrivedEventHandler );
+
+{-- DRAW ----------------------------------------------------------------------}
+
+procedure   setOnDraw( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+procedure   setOnDrawBackground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+procedure   setOnDrawContent( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+procedure   setOnDrawForeground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+
+
+{-- EXCHANGE ------------------------------------------------------------------}
+
+procedure   setOnExchange( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+procedure   setOnExchangeNone( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+procedure   setOnExchangeCopy( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+procedure   setOnExchangeMove( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+procedure   setOnExchangeLink( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+
+{-- GESTURE -------------------------------------------------------------------}
+
+procedure   setOnGesture( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+procedure   setOnGestureRequest( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+procedure   setOnGestureZoom( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+procedure   setOnGesturePan( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+procedure   setOnGestureRotate( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+procedure   setOnGestureTap1( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+procedure   setOnGestureTap2( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+
+{-- BEHAVIOR_EVENT ------------------------------------------------------------}
+
+procedure   setOnButtonClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnButtonPress( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnButtonStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnEditValueChanging( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnEditValueChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnSelectSelectionChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnSelectStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnPopupRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnPopupReady( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnPopupDismissed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnMenuItemActive( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnMenuItemClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnContextMenuSetup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnContextMenuRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnVisiualStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnDisabledStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnPopupDismissing( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnHyperLinkClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnTableHeaderClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnTableRowClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnTableRowDblClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnElementCollapsed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnElementExpanded( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnActivateChild( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnDoSwitchTab( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnInitDataView( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnRowsDataRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnUiStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnFormSubmit( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnFormReset( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnDocumentComplete( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnHistoryPush( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnHistoryDrop( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnHistoryPrior( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnHistoryNext( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnHistoryStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnClosePopup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnRequestTooltip( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+procedure   setOnAnimation( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+
+protected
+    procedure   addEvent( aEventHandler : THTMLayoutEventHandler );
 
 public
-    constructor Create();
+    constructor Create(); overload;
+    constructor Create( aDomElement : HELEMENT );  overload;
     destructor  Destroy(); override;
 
 class function controlPressed( const aParams : PHTMLayoutKeyParams ) : boolean;
@@ -620,129 +763,270 @@ class function rightPressed( const aParams : PHTMLayoutMouseParams ) : boolean;
     function    attach( aDomElement : HELEMENT ) : boolean;
 
     // INITIALIZATION
-    function    onInitialization( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onBehaviorDetach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onBehaviorAttach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    
+    function    addOnInitialization( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnBehaviorDetach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnBehaviorAttach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+
     // MOUSE
-    function    onMouse( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onMouseEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDblClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseTick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseIdle( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDrop( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDragEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDragLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDragRequest( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDraggingEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDraggingLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDraggingMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDraggingUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMouseDraggingDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouse( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler; // same as onMouseClick
+    function    addOnMouseDClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDblClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler; // same as onMouseDClick
+    function    addOnMouseDblClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler; // same as onMouseDClick
+    function    addOnMouseWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler; // same as onMouseWheel
+    function    addOnMouseTick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseIdle( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDrop( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDragEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDragLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDragRequest( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseDraggingEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseDraggingLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseDraggingMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseDraggingUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMouseDraggingDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // KEY
-    function    onKey( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onKeyDown( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onKeyUp( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onKeyChar( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
+    function    addOnKey( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnKeyDown( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnKeyUp( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnKeyChar( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // FOCUS
-    function    onFocus( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onFocusLost( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onFocusGot( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
+    function    addOnFocus( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnFocusLost( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnFocusGot( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // SCROLL
-    function    onScroll( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollHome( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollEnd( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollStepPlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollStepMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollPagePlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollPageMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollPos( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onScrollSliderReleased( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScroll( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollHome( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollEnd( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollStepPlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollStepMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollPagePlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollPageMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollPos( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnScrollSliderReleased( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // TIMER
-    function    onTimer( const aCssSelector : string; aUserEventHandler : HTMLTimerEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnTimer( const aCssSelector : string; aUserEventHandler : HTMLTimerEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // SIZE
-    function    onSize( const aCssSelector : string; aUserEventHandler : HTMLSizeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnSize( const aCssSelector : string; aUserEventHandler : HTMLSizeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // DRAW
-    function    onDraw( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onDrawBackground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDrawContent( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDrawForeground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDraw( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDrawBackground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDrawContent( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDrawForeground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // HANDLE_DATA_ARRIVED
-    function    onDataArrived( const aCssSelector : string; aUserEventHandler : HTMLDataArrivedEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDataArrived( const aCssSelector : string; aUserEventHandler : HTMLDataArrivedEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // EXCHANGE
-    function    onExchange( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onExchangeNone( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onExchangeCopy( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onExchangeMove( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onExchangeLink( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
+    function    addOnExchange( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnExchangeNone( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnExchangeCopy( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnExchangeMove( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnExchangeLink( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // GESTURE
-    function    onGesture( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onGestureRequest( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onGestureZoom( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onGesturePan( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onGestureRotate( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onGestureTap1( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onGestureTap2( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
+    function    addOnGesture( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnGestureRequest( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnGestureZoom( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnGesturePan( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnGestureRotate( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnGestureTap1( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnGestureTap2( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 
     // BEHAVIOR_EVENT
-    function    onButtonClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onButtonPress( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onButtonStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onEditValueChanging( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onEditValueChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onSelectSelectionChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onSelectStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onPopupRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onPopupReady( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onPopupDismissed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMenuItemActive( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onMenuItemClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onContextMenuSetup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onContextMenuRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onVisiualStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDisabledStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onPopupDismissing( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
+    function    addOnButtonClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnButtonPress( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnButtonStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnEditValueChanging( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnEditValueChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnSelectSelectionChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnSelectStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnPopupRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnPopupReady( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnPopupDismissed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMenuItemActive( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnMenuItemClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnContextMenuSetup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnContextMenuRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnVisiualStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDisabledStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnPopupDismissing( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
     // "grey" event codes  - notfications from behaviors from this SDK
-    function    onHyperLinkClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onTableHeaderClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onTableRowClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onTableRowDblClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onElementCollapsed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-    function    onElementExpanded( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onActivateChild( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDoSwitchTab( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onInitDataView( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onRowsDataRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onUiStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onFormSubmit( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onFormReset( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onDocumentComplete( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onHistoryPush( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onHistoryDrop( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onHistoryPrior( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onHistoryNext( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onHistoryStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onClosePopup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onRequestTooltip( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
-    function    onAnimation( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;  
+    function    addOnHyperLinkClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnTableHeaderClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnTableRowClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnTableRowDblClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnElementCollapsed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnElementExpanded( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnActivateChild( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDoSwitchTab( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnInitDataView( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnRowsDataRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnUiStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnFormSubmit( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnFormReset( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnDocumentComplete( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnHistoryPush( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnHistoryDrop( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnHistoryPrior( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnHistoryNext( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnHistoryStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnClosePopup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnRequestTooltip( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+    function    addOnAnimation( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+
+public // property
+
+{-- INITIALIZATION ------------------------------------------------------------}
+
+    property onInitialization[ const aCssSelector : string ] : HTMLInitializationEventHandler write setOnInitialization;
+    property onBehaviorDetach[ const aCssSelector : string ] : HTMLInitializationEventHandler write setOnBehaviorDetach;
+    property onBehaviorAttach[ const aCssSelector : string ] : HTMLInitializationEventHandler write setOnBehaviorAttach;
+
+{-- MOUSE ---------------------------------------------------------------------}
+
+    property onMouse[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouse;
+    property onMouseEnter[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseEnter;
+    property onMouseLeave[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseLeave;
+    property onMouseMove[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseMove;
+    property onMouseUp[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseUp;
+    property onMouseDown[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDown;
+    property onMouseClick[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseClick;
+    property onClick[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseClick;    
+    property onMouseDClick[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDClick;
+    property onMouseDblClick[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDClick;
+    property onDblClick[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDClick;
+    property onMouseWheel[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseWheel;
+    property onWheel[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseWheel;
+    property onMouseTick[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseTick;
+    property onMouseIdle[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseIdle;
+    property onDrop[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnDrop;
+    property onDragEnter[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnDragEnter;
+    property onDragLeave[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnDragLeave;
+    property onDragRequest[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnDragRequest;
+    property onMouseDraggingEnter[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDraggingEnter;
+    property onMouseDraggingLeave[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDraggingLeave;
+    property onMouseDraggingMove[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDraggingMove;
+    property onMouseDraggingUp[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDraggingUp;
+    property onMouseDraggingDown[ const aCssSelector : string ] : HTMLMouseEventHandler write setOnMouseDraggingDown;
+    
+{-- KEY ----------------------------------------------------------------------}
+
+    property onKey[ const aCssSelector : string ] : HTMLKeyEventHandler write setOnKey;
+    property onKeyDown[ const aCssSelector : string ] : HTMLKeyEventHandler write setOnKeyDown;
+    property onKeyUp[ const aCssSelector : string ] : HTMLKeyEventHandler write setOnKeyUp;
+    property onKeyChar[ const aCssSelector : string ] : HTMLKeyEventHandler write setOnKeyChar;
+
+{-- FOCUS ---------------------------------------------------------------------}
+
+    property onFocus[ const aCssSelector : string ] : HTMLFocusEventHandler write setOnFocus;
+    property onFocusLost[ const aCssSelector : string ] : HTMLFocusEventHandler write setOnFocusLost;
+    property onFocusGot[ const aCssSelector : string ] : HTMLFocusEventHandler write setOnFocusGot;
+
+{-- SCROLL --------------------------------------------------------------------}
+
+    property onScroll[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScroll;
+    property onScrollHome[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollHome;
+    property onScrollEnd[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollEnd;
+    property onScrollStepPlus[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollStepPlus;
+    property onScrollStepMinus[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollStepMinus;
+    property onScrollPagePlus[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollPagePlus;
+    property onScrollPageMinus[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollPageMinus;
+    property onScrollPos[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollPos;
+    property onScrollSliderReleased[ const aCssSelector : string ] : HTMLScrollEventHandler write setOnScrollSliderReleased;
+
+{-- TIMER ---------------------------------------------------------------------}
+
+    property onTimer[ const aCssSelector : string ] : HTMLTimerEventHandler write setOnTimer;
+
+{-- SIZE ---------------------------------------------------------------------}
+
+    property onSize[ const aCssSelector : string ] : HTMLSizeEventHandler write setOnSize;
+
+{-- HANDLE_DATA_ARRIVED -------------------------------------------------------}
+
+    property onDataArrived[ const aCssSelector : string ] : HTMLDataArrivedEventHandler write setOnDataArrived;
+
+{-- DRAW ----------------------------------------------------------------------}
+
+    property onDraw[ const aCssSelector : string ] : HTMLDrawEventHandler write setOnDraw;
+    property onDrawBackground[ const aCssSelector : string ] : HTMLDrawEventHandler write setOnDrawBackground;
+    property onDrawContent[ const aCssSelector : string ] : HTMLDrawEventHandler write setOnDrawContent;
+    property onDrawForeground[ const aCssSelector : string ] : HTMLDrawEventHandler write setOnDrawForeground;
+
+
+{-- EXCHANGE ------------------------------------------------------------------}
+
+    property onExchange[ const aCssSelector : string ] : HTMLExchangeEventHandler write setOnExchange;
+    property onExchangeNone[ const aCssSelector : string ] : HTMLExchangeEventHandler write setOnExchangeNone;
+    property onExchangeCopy[ const aCssSelector : string ] : HTMLExchangeEventHandler write setOnExchangeCopy;
+    property onExchangeMove[ const aCssSelector : string ] : HTMLExchangeEventHandler write setOnExchangeMove;
+    property onExchangeLink[ const aCssSelector : string ] : HTMLExchangeEventHandler write setOnExchangeLink;
+
+{-- GESTURE -------------------------------------------------------------------}
+
+    property onGesture[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGesture;
+    property onGestureRequest[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGestureRequest;
+    property onGestureZoom[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGestureZoom;
+    property onGesturePan[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGesturePan;
+    property onGestureRotate[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGestureRotate;
+    property onGestureTap1[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGestureTap1;
+    property onGestureTap2[ const aCssSelector : string ] : HTMLGestureEventHandler write setOnGestureTap2;
+
+{-- BEHAVIOR_EVENT ------------------------------------------------------------}
+
+    property onButtonClick[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnButtonClick;
+    property onButtonPress[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnButtonPress;
+    property onButtonStateChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnButtonStateChanged;
+    property onEditValueChanging[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnEditValueChanging;
+    property onEditValueChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnEditValueChanged;
+    property onSelectSelectionChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnSelectSelectionChanged;
+    property onSelectStateChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnSelectStateChanged;
+    property onPopupRequest[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnPopupRequest;
+    property onPopupReady[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnPopupReady;
+    property onPopupDismissed[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnPopupDismissed;
+    property onMenuItemActive[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnMenuItemActive;
+    property onMenuItemClick[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnMenuItemClick;
+    property onContextMenuSetup[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnContextMenuSetup;
+    property onContextMenuRequest[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnContextMenuRequest;
+    property onVisiualStatusChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnVisiualStatusChanged;
+    property onDisabledStatusChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnDisabledStatusChanged;
+    property onPopupDismissing[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnPopupDismissing;
+    property onHyperLinkClick[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnHyperLinkClick;
+    property onTableHeaderClick[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnTableHeaderClick;
+    property onTableRowClick[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnTableRowClick;
+    property onTableRowDblClick[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnTableRowDblClick;
+    property onElementCollapsed[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnElementCollapsed;
+    property onElementExpanded[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnElementExpanded;
+    property onActivateChild[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnActivateChild;
+    property onDoSwitchTab[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnDoSwitchTab;
+    property onInitDataView[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnInitDataView;
+    property onRowsDataRequest[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnRowsDataRequest;
+    property onUiStateChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnUiStateChanged;
+    property onFormSubmit[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnFormSubmit;
+    property onFormReset[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnFormReset;
+    property onDocumentComplete[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnDocumentComplete;
+    property onHistoryPush[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnHistoryPush;
+    property onHistoryDrop[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnHistoryDrop;
+    property onHistoryPrior[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnHistoryPrior;
+    property onHistoryNext[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnHistoryNext;
+    property onHistoryStateChanged[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnHistoryStateChanged;
+    property onClosePopup[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnClosePopup;
+    property onRequestTooltip[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnRequestTooltip;
+    property onAnimation[ const aCssSelector : string ] : HTMLBehaviorEventHandler write setOnAnimation;
 
     end;
 
@@ -833,8 +1117,10 @@ function SetElementEventHandler( aDomElement : HELEMENT; aEventHandler : Pointer
 var
     e : THTMLayoutEventHandler;
 begin
+    Result := false; // this function will be called multiply times for every element found
+
     e := THTMLayoutEventHandler( aEventHandler );
-    Result := ( HLDOM_OK = HTMLayoutAttachEventHandlerEx( aDomElement, e.FhandlerProxy, aEventHandler, e.Fsubscription ) );
+    HTMLayoutAttachEventHandlerEx( aDomElement, e.FhandlerProxy, aEventHandler, e.Fsubscription );
 end;
 
 {*******************************************************************************
@@ -884,6 +1170,7 @@ begin
         exit;
 
     Result := ( HLDOM_OK = HTMLayoutSelectElements( aDomElement, LPCSTR( FcssSelector ), SetElementEventHandler, self ) );
+    assert( Result );
 end;
 
 {-- THTMLayoutEvent -----------------------------------------------------------}
@@ -893,7 +1180,17 @@ end;
 *******************************************************************************}
 constructor THTMLayoutEvent.Create();
 begin
+    FdomElement := nil;
     Fevents := TObjectList.Create( true );
+end;
+
+{*******************************************************************************
+*
+*******************************************************************************}
+constructor THTMLayoutEvent.Create( aDomElement : HELEMENT );
+begin
+    Create();
+    FdomElement := aDomElement;
 end;
 
 {*******************************************************************************
@@ -913,12 +1210,25 @@ var
     i : integer;
 begin
     Result := false;
+    FdomElement := aDomElement;
 
     for i := 0 to Fevents.Count - 1 do
     begin
         Result := THTMLayoutEventHandler( Fevents[i] ).attach( aDomElement );
         if ( not Result ) then
             break;
+    end;
+end;
+
+{*******************************************************************************
+* addEvent
+*******************************************************************************}
+procedure THTMLayoutEvent.addEvent( aEventHandler : THTMLayoutEventHandler );
+begin
+    Fevents.add( aEventHandler );
+    if ( Assigned( FdomElement ) ) then
+    begin
+        aEventHandler.attach( FdomElement );
     end;
 end;
 
@@ -941,26 +1251,41 @@ begin
 end;
 
 // onInitialization
-function THTMLayoutEvent.onInitialization( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnInitialization( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( INITIALIZATION_ALL, HANDLE_INITIALIZATION, InitializationHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
 
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnInitialization( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler );
+begin
+    addOnInitialization( aCssSelector, aUserEventHandler, nil );
 end;
 
 // onBehaviorDetach
-function THTMLayoutEvent.onBehaviorDetach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnBehaviorDetach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( BEHAVIOR_DETACH , HANDLE_INITIALIZATION, InitializationHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnBehaviorDetach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler );
+begin
+    addOnBehaviorDetach( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onBehaviorAttach
-function THTMLayoutEvent.onBehaviorAttach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnBehaviorAttach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( BEHAVIOR_ATTACH , HANDLE_INITIALIZATION, InitializationHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnBehaviorAttach( const aCssSelector : string; aUserEventHandler : HTMLInitializationEventHandler );
+begin
+    addOnBehaviorAttach( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- MOUSE ---------------------------------------------------------------------}
@@ -982,166 +1307,266 @@ begin
 end;
 
 // onMouse
-function THTMLayoutEvent.onMouse( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouse( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_ALL, HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
 
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnMouse( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseEnter( aCssSelector, aUserEventHandler, nil );
 end;
 
 // onMouseEnter
-function THTMLayoutEvent.onMouseEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_ENTER , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseEnter( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseLeave
-function THTMLayoutEvent.onMouseLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_LEAVE , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseLeave( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseMove
-function THTMLayoutEvent.onMouseMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_MOVE , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseMove( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseUp
-function THTMLayoutEvent.onMouseUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_UP , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseUp( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseDown
-function THTMLayoutEvent.onMouseDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_DOWN , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDown( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseClick
-function THTMLayoutEvent.onMouseClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_CLICK , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
-// onClick
-function THTMLayoutEvent.onClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+
+procedure THTMLayoutEvent.setOnMouseClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
 begin
-    Result := THTMLayoutEventHandler.Create( MOUSE_CLICK , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addOnMouseClick( aCssSelector, aUserEventHandler, nil );
+end;
+
+function THTMLayoutEvent.addOnClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+begin
+    Result := addOnMouseClick( aCssSelector, aUserEventHandler, nil );
 end;
     
 // onMouseDClick
-function THTMLayoutEvent.onMouseDClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_DCLICK , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
-// onDblClick
-function THTMLayoutEvent.onDblClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+
+function THTMLayoutEvent.addOnDblClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
-    Result := THTMLayoutEventHandler.Create( MOUSE_DCLICK , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    Result := addOnMouseDClick( aCssSelector, aUserEventHandler, aUserData );
 end;
-    
+
+function THTMLayoutEvent.addOnMouseDblClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+begin
+    Result := addOnMouseDClick( aCssSelector, aUserEventHandler, aUserData );
+end;
+
+procedure THTMLayoutEvent.setOnMouseDClick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseWheel
-function THTMLayoutEvent.onMouseWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_WHEEL , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
-// onWheel
-function THTMLayoutEvent.onWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+
+function THTMLayoutEvent.addOnWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_WHEEL , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseWheel( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseWheel( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseTick
-function THTMLayoutEvent.onMouseTick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseTick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_TICK , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseTick( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseTick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseIdle
-function THTMLayoutEvent.onMouseIdle( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseIdle( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_IDLE , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseIdle( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseIdle( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDrop
-function THTMLayoutEvent.onDrop( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDrop( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DROP , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDrop( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnDrop( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDragEnter
-function THTMLayoutEvent.onDragEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDragEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAG_ENTER , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDragEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnDragEnter( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDragLeave
-function THTMLayoutEvent.onDragLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDragLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAG_LEAVE , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDragLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnDragLeave( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDragRequest
-function THTMLayoutEvent.onDragRequest( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDragRequest( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAG_REQUEST , HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDragRequest( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnDragRequest( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseDraggingEnter
-function THTMLayoutEvent.onMouseDraggingEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDraggingEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_ENTER or DRAGGING, HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseDraggingEnter( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDraggingEnter( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseDraggingLeave
-function THTMLayoutEvent.onMouseDraggingLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDraggingLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_LEAVE or DRAGGING, HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+    procedure THTMLayoutEvent.setOnMouseDraggingLeave( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDraggingLeave( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseDraggingMove
-function THTMLayoutEvent.onMouseDraggingMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDraggingMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_MOVE or DRAGGING, HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseDraggingMove( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDraggingMove( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseDraggingUp
-function THTMLayoutEvent.onMouseDraggingUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDraggingUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_UP or DRAGGING, HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMouseDraggingUp( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDraggingUp( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMouseDraggingDown
-function THTMLayoutEvent.onMouseDraggingDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMouseDraggingDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MOUSE_DOWN or DRAGGING, HANDLE_MOUSE or DISABLE_INITIALIZATION, MouseHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnMouseDraggingDown( const aCssSelector : string; aUserEventHandler : HTMLMouseEventHandler );
+begin
+    addOnMouseDraggingDown( aCssSelector, aUserEventHandler, nil );
 end;
     
 {-- KEY ---------------------------------------------------------------------}
@@ -1163,33 +1588,53 @@ begin
 end;
 
 // onKey
-function THTMLayoutEvent.onKey( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnKey( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( KEY_ALL, HANDLE_KEY or DISABLE_INITIALIZATION, KeyHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
 
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnKey( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+begin
+    addOnKey( aCssSelector, aUserEventHandler, nil );
 end;
 
 // onKeyDown
-function THTMLayoutEvent.onKeyDown( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnKeyDown( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( KEY_DOWN , HANDLE_KEY or DISABLE_INITIALIZATION, KeyHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnKeyDown( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+begin
+    addOnKeyDown( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onKeyUp
-function THTMLayoutEvent.onKeyUp( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnKeyUp( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( KEY_UP , HANDLE_KEY or DISABLE_INITIALIZATION, KeyHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnKeyUp( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+begin
+    addOnKeyUp( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onKeyChar
-function THTMLayoutEvent.onKeyChar( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnKeyChar( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( KEY_CHAR , HANDLE_KEY or DISABLE_INITIALIZATION, KeyHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnKeyChar( const aCssSelector : string; aUserEventHandler : HTMLKeyEventHandler );
+begin
+    addOnKeyChar( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- FOCUS ---------------------------------------------------------------------}
@@ -1211,26 +1656,41 @@ begin
 end;
 
 // onFocus
-function THTMLayoutEvent.onFocus( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnFocus( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( FOCUS_ALL , HANDLE_FOCUS or DISABLE_INITIALIZATION, FocusHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
 
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnFocus( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler );
+begin
+    addOnFocus( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onFocusLost
-function THTMLayoutEvent.onFocusLost( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnFocusLost( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( FOCUS_LOST , HANDLE_FOCUS or DISABLE_INITIALIZATION, FocusHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnFocusLost( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler );
+begin
+    addOnFocusLost( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onFocusGot
-function THTMLayoutEvent.onFocusGot( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnFocusGot( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( FOCUS_GOT , HANDLE_FOCUS or DISABLE_INITIALIZATION, FocusHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnFocusGot( const aCssSelector : string; aUserEventHandler : HTMLFocusEventHandler );
+begin
+    addOnFocusGot( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- SCROLL --------------------------------------------------------------------}
@@ -1252,68 +1712,113 @@ begin
 end;
 
 // onScroll
-function THTMLayoutEvent.onScroll( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScroll( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_ALL , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
     
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScroll( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScroll( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollHome
-function THTMLayoutEvent.onScrollHome( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollHome( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_HOME , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollHome( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollHome( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollEnd
-function THTMLayoutEvent.onScrollEnd( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollEnd( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_END , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollEnd( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollEnd( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollStepPlus
-function THTMLayoutEvent.onScrollStepPlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollStepPlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_STEP_PLUS , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollStepPlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollStepPlus( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollStepMinus
-function THTMLayoutEvent.onScrollStepMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollStepMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_STEP_MINUS , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollStepMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollStepMinus( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollPagePlus
-function THTMLayoutEvent.onScrollPagePlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollPagePlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_PAGE_PLUS , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollPagePlus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollPagePlus( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollPageMinus
-function THTMLayoutEvent.onScrollPageMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollPageMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_PAGE_MINUS , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollPageMinus( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollPageMinus( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollPos
-function THTMLayoutEvent.onScrollPos( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollPos( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_POS , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnScrollPos( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollPos( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onScrollSliderReleased
-function THTMLayoutEvent.onScrollSliderReleased( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnScrollSliderReleased( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SCROLL_SLIDER_RELEASED , HANDLE_SCROLL or DISABLE_INITIALIZATION, ScrollHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnScrollSliderReleased( const aCssSelector : string; aUserEventHandler : HTMLScrollEventHandler );
+begin
+    addOnScrollSliderReleased( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- TIMER ---------------------------------------------------------------------}
@@ -1332,10 +1837,14 @@ begin
 end;
 
 // onTimer
-function THTMLayoutEvent.onTimer( const aCssSelector : string; aUserEventHandler : HTMLTimerEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-begin
-    Result := THTMLayoutEventHandler.Create( ALL_CMD, HANDLE_TIMER or DISABLE_INITIALIZATION, TimerHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+function THTMLayoutEvent.addOnTimer( const aCssSelector : string; aUserEventHandler : HTMLTimerEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+begin    Result := THTMLayoutEventHandler.Create( ALL_CMD, HANDLE_TIMER or DISABLE_INITIALIZATION, TimerHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnTimer( const aCssSelector : string; aUserEventHandler : HTMLTimerEventHandler );
+begin
+    addOnTimer( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- SIZE ---------------------------------------------------------------------}
@@ -1354,10 +1863,14 @@ begin
 end;
 
 // onSize
-function THTMLayoutEvent.onSize( const aCssSelector : string; aUserEventHandler : HTMLSizeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-begin
-    Result := THTMLayoutEventHandler.Create( ALL_CMD, HANDLE_SIZE or DISABLE_INITIALIZATION, SizeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+function THTMLayoutEvent.addOnSize( const aCssSelector : string; aUserEventHandler : HTMLSizeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+begin    Result := THTMLayoutEventHandler.Create( ALL_CMD, HANDLE_SIZE or DISABLE_INITIALIZATION, SizeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnSize( const aCssSelector : string; aUserEventHandler : HTMLSizeEventHandler );
+begin
+    addOnSize( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- HANDLE_DATA_ARRIVED -------------------------------------------------------}
@@ -1376,10 +1889,14 @@ begin
 end;
 
 // onDataArrived
-function THTMLayoutEvent.onDataArrived( const aCssSelector : string; aUserEventHandler : HTMLDataArrivedEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
-begin
-    Result := THTMLayoutEventHandler.Create( ALL_CMD, HANDLE_DATA_ARRIVED or DISABLE_INITIALIZATION, DataArrivedHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+function THTMLayoutEvent.addOnDataArrived( const aCssSelector : string; aUserEventHandler : HTMLDataArrivedEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+begin    Result := THTMLayoutEventHandler.Create( ALL_CMD, HANDLE_DATA_ARRIVED or DISABLE_INITIALIZATION, DataArrivedHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnDataArrived( const aCssSelector : string; aUserEventHandler : HTMLDataArrivedEventHandler );
+begin
+    addOnDataArrived( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- DRAW ----------------------------------------------------------------------}
@@ -1401,33 +1918,53 @@ begin
 end;
 
 // onDraw
-function THTMLayoutEvent.onDraw( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDraw( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAW_ALL, HANDLE_DRAW or DISABLE_INITIALIZATION, DrawHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
 
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDraw( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+begin
+    addOnDraw( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDrawBackground
-function THTMLayoutEvent.onDrawBackground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDrawBackground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAW_BACKGROUND, HANDLE_DRAW or DISABLE_INITIALIZATION, DrawHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDrawBackground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+begin
+    addOnDrawBackground( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDrawContent
-function THTMLayoutEvent.onDrawContent( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDrawContent( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAW_CONTENT, HANDLE_DRAW or DISABLE_INITIALIZATION, DrawHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDrawContent( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+begin
+    addOnDrawContent( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDrawForeground
-function THTMLayoutEvent.onDrawForeground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDrawForeground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DRAW_FOREGROUND, HANDLE_DRAW or DISABLE_INITIALIZATION, DrawHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnDrawForeground( const aCssSelector : string; aUserEventHandler : HTMLDrawEventHandler );
+begin
+    addOnDrawForeground( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- EXCHANGE ------------------------------------------------------------------}
@@ -1449,40 +1986,65 @@ begin
 end;
 
 // onExchange
-function THTMLayoutEvent.onExchange( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnExchange( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EXC_ALL , HANDLE_EXCHANGE or DISABLE_INITIALIZATION, ExchangeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
 
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnExchange( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+begin
+    addOnExchange( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onExchangeNone
-function THTMLayoutEvent.onExchangeNone( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnExchangeNone( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EXC_NONE , HANDLE_EXCHANGE or DISABLE_INITIALIZATION, ExchangeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnExchangeNone( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+begin
+    addOnExchangeNone( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onExchangeCopy
-function THTMLayoutEvent.onExchangeCopy( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnExchangeCopy( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EXC_COPY , HANDLE_EXCHANGE or DISABLE_INITIALIZATION, ExchangeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnExchangeCopy( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+begin
+    addOnExchangeCopy( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onExchangeMove
-function THTMLayoutEvent.onExchangeMove( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnExchangeMove( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EXC_MOVE , HANDLE_EXCHANGE or DISABLE_INITIALIZATION, ExchangeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnExchangeMove( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+begin
+    addOnExchangeMove( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onExchangeLink
-function THTMLayoutEvent.onExchangeLink( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnExchangeLink( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EXC_LINK , HANDLE_EXCHANGE or DISABLE_INITIALIZATION, ExchangeHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnExchangeLink( const aCssSelector : string; aUserEventHandler : HTMLExchangeEventHandler );
+begin
+    addOnExchangeLink( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- GESTURE -------------------------------------------------------------------}
@@ -1504,54 +2066,89 @@ begin
 end;
 
 // onGesture
-function THTMLayoutEvent.onGesture( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGesture( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_ALL , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
     Result.FallEvents := true;
     
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnGesture( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGesture( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onGestureRequest
-function THTMLayoutEvent.onGestureRequest( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGestureRequest( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_REQUEST , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnGestureRequest( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGestureRequest( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onGestureZoom
-function THTMLayoutEvent.onGestureZoom( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGestureZoom( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_ZOOM , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnGestureZoom( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGestureZoom( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onGesturePan
-function THTMLayoutEvent.onGesturePan( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGesturePan( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_PAN , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnGesturePan( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGesturePan( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onGestureRotate
-function THTMLayoutEvent.onGestureRotate( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGestureRotate( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_ROTATE , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnGestureRotate( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGestureRotate( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onGestureTap1
-function THTMLayoutEvent.onGestureTap1( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGestureTap1( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_TAP1 , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnGestureTap1( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGestureTap1( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onGestureTap2
-function THTMLayoutEvent.onGestureTap2( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnGestureTap2( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( GESTURE_TAP2 , HANDLE_GESTURE or DISABLE_INITIALIZATION, GestureHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnGestureTap2( const aCssSelector : string; aUserEventHandler : HTMLGestureEventHandler );
+begin
+    addOnGestureTap2( aCssSelector, aUserEventHandler, nil );
 end;
 
 {-- BEHAVIOR_EVENT ------------------------------------------------------------}
@@ -1573,277 +2170,473 @@ begin
 end;
 
 // onButtonClick
-function THTMLayoutEvent.onButtonClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnButtonClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( BUTTON_CLICK , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnButtonClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnButtonClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onButtonPress
-function THTMLayoutEvent.onButtonPress( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnButtonPress( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( BUTTON_PRESS , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnButtonPress( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnButtonPress( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onButtonStateChanged
-function THTMLayoutEvent.onButtonStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnButtonStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( BUTTON_STATE_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnButtonStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnButtonStateChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onEditValueChanging
-function THTMLayoutEvent.onEditValueChanging( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnEditValueChanging( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EDIT_VALUE_CHANGING , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnEditValueChanging( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnEditValueChanging( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onEditValueChanged
-function THTMLayoutEvent.onEditValueChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnEditValueChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( EDIT_VALUE_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnEditValueChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnEditValueChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onSelectSelectionChanged
-function THTMLayoutEvent.onSelectSelectionChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnSelectSelectionChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SELECT_SELECTION_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnSelectSelectionChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnSelectSelectionChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onSelectStateChanged
-function THTMLayoutEvent.onSelectStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnSelectStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( SELECT_STATE_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnSelectStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnSelectStateChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onPopupRequest
-function THTMLayoutEvent.onPopupRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnPopupRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( POPUP_REQUEST , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnPopupRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnPopupRequest( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onPopupReady
-function THTMLayoutEvent.onPopupReady( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnPopupReady( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( POPUP_READY , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnPopupReady( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnPopupReady( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onPopupDismissed
-function THTMLayoutEvent.onPopupDismissed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnPopupDismissed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( POPUP_DISMISSED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnPopupDismissed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnPopupDismissed( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMenuItemActive
-function THTMLayoutEvent.onMenuItemActive( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMenuItemActive( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MENU_ITEM_ACTIVE , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMenuItemActive( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnMenuItemActive( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onMenuItemClick
-function THTMLayoutEvent.onMenuItemClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnMenuItemClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( MENU_ITEM_CLICK , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnMenuItemClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnMenuItemClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onContextMenuSetup
-function THTMLayoutEvent.onContextMenuSetup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnContextMenuSetup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( CONTEXT_MENU_SETUP , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnContextMenuSetup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnContextMenuSetup( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onContextMenuRequest
-function THTMLayoutEvent.onContextMenuRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnContextMenuRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( CONTEXT_MENU_REQUEST , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnContextMenuRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnContextMenuRequest( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onVisiualStatusChanged
-function THTMLayoutEvent.onVisiualStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnVisiualStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( VISIUAL_STATUS_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnVisiualStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnVisiualStatusChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDisabledStatusChanged
-function THTMLayoutEvent.onDisabledStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDisabledStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DISABLED_STATUS_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDisabledStatusChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnDisabledStatusChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onPopupDismissing
-function THTMLayoutEvent.onPopupDismissing( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnPopupDismissing( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( POPUP_DISMISSING , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    // "grey" event codes  - notfications from behaviors from this SDK
+
+procedure THTMLayoutEvent.setOnPopupDismissing( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnPopupDismissing( aCssSelector, aUserEventHandler, nil );
+end;
+
+// "grey" event codes  - notfications from behaviors from this SDK
     
 // onHyperLinkClick
-function THTMLayoutEvent.onHyperLinkClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnHyperLinkClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( HYPERLINK_CLICK , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnHyperLinkClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnHyperLinkClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onTableHeaderClick
-function THTMLayoutEvent.onTableHeaderClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnTableHeaderClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( TABLE_HEADER_CLICK , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnTableHeaderClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnTableHeaderClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onTableRowClick
-function THTMLayoutEvent.onTableRowClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnTableRowClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( TABLE_ROW_CLICK , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnTableRowClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnTableRowClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onTableRowDblClick
-function THTMLayoutEvent.onTableRowDblClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnTableRowDblClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( TABLE_ROW_DBL_CLICK , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnTableRowDblClick( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnTableRowDblClick( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onElementCollapsed
-function THTMLayoutEvent.onElementCollapsed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnElementCollapsed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( ELEMENT_COLLAPSED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnElementCollapsed( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnElementCollapsed( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onElementExpanded
-function THTMLayoutEvent.onElementExpanded( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnElementExpanded( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( ELEMENT_EXPANDED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnElementExpanded( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnElementExpanded( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onActivateChild
-function THTMLayoutEvent.onActivateChild( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnActivateChild( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( ACTIVATE_CHILD , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnActivateChild( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnActivateChild( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDoSwitchTab
-function THTMLayoutEvent.onDoSwitchTab( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDoSwitchTab( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DO_SWITCH_TAB , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDoSwitchTab( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnDoSwitchTab( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onInitDataView
-function THTMLayoutEvent.onInitDataView( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnInitDataView( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( INIT_DATA_VIEW , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnInitDataView( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnInitDataView( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onRowsDataRequest
-function THTMLayoutEvent.onRowsDataRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnRowsDataRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( ROWS_DATA_REQUEST , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnRowsDataRequest( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnRowsDataRequest( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onUiStateChanged
-function THTMLayoutEvent.onUiStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnUiStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( UI_STATE_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnUiStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnUiStateChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onFormSubmit
-function THTMLayoutEvent.onFormSubmit( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnFormSubmit( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( FORM_SUBMIT , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnFormSubmit( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnFormSubmit( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onFormReset
-function THTMLayoutEvent.onFormReset( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnFormReset( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( FORM_RESET , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnFormReset( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnFormReset( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onDocumentComplete
-function THTMLayoutEvent.onDocumentComplete( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnDocumentComplete( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( DOCUMENT_COMPLETE , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnDocumentComplete( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnDocumentComplete( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onHistoryPush
-function THTMLayoutEvent.onHistoryPush( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnHistoryPush( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( HISTORY_PUSH , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnHistoryPush( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnHistoryPush( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onHistoryDrop
-function THTMLayoutEvent.onHistoryDrop( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnHistoryDrop( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( HISTORY_DROP , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnHistoryDrop( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnHistoryDrop( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onHistoryPrior
-function THTMLayoutEvent.onHistoryPrior( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnHistoryPrior( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( HISTORY_PRIOR , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnHistoryPrior( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnHistoryPrior( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onHistoryNext
-function THTMLayoutEvent.onHistoryNext( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnHistoryNext( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( HISTORY_NEXT , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnHistoryNext( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnHistoryNext( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onHistoryStateChanged
-function THTMLayoutEvent.onHistoryStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnHistoryStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( HISTORY_STATE_CHANGED , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnHistoryStateChanged( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnHistoryStateChanged( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onClosePopup
-function THTMLayoutEvent.onClosePopup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnClosePopup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( CLOSE_POPUP , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnClosePopup( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnClosePopup( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onRequestTooltip
-function THTMLayoutEvent.onRequestTooltip( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnRequestTooltip( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( REQUEST_TOOLTIP , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
 end;
-    
+
+procedure THTMLayoutEvent.setOnRequestTooltip( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnRequestTooltip( aCssSelector, aUserEventHandler, nil );
+end;
+
 // onAnimation
-function THTMLayoutEvent.onAnimation( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
+function THTMLayoutEvent.addOnAnimation( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler; aUserData : Pointer = nil ) : THTMLayoutEventHandler;
 begin
     Result := THTMLayoutEventHandler.Create( ANIMATION , HANDLE_BEHAVIOR_EVENT or DISABLE_INITIALIZATION, BehaviorEventHandler, aCssSelector, TMethod( aUserEventHandler ), aUserData );
-    Fevents.add( Result );
+    addEvent( Result );
+end;
+
+procedure THTMLayoutEvent.setOnAnimation( const aCssSelector : string; aUserEventHandler : HTMLBehaviorEventHandler );
+begin
+    addOnAnimation( aCssSelector, aUserEventHandler, nil );
 end;
 
 INITIALIZATION

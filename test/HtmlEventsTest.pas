@@ -57,9 +57,9 @@ begin
     body := body + table;
     c.html := '<html><head><style>' + style + '</style></head><body>' + body + '</body></html>';
 
-    e := THTMLayoutEvent.Create();
-    e.onMouseClick( '#myDiv', onMyDivClick );
-    e.attach( c.hroot );
+//    e := THTMLayoutEvent.Create();
+    c.domEvents.onMouseClick[ '#myDiv' ] := onMyDivClick;
+//    e.attach( c.hroot );
 end;
 
 {*******************************************************************************

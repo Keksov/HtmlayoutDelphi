@@ -3,7 +3,7 @@ unit htmlConst;
 interface
 
 type
-    EHTMLAttributes = ( HTML_ATTR_SIZE, HTML_ATTR_VALUE, HTML_ATTR_HREF );
+    EHTMLAttributes = ( HTML_ATTR_SIZE, HTML_ATTR_VALUE, HTML_ATTR_HREF, HTML_ATTR_TYPE );
 
     // just a list of most friquently used attributes, fill free to extend it. see THtmlHElement CSS shorcuts below
     EHTMLStyleAttributes = (
@@ -12,7 +12,7 @@ type
 
 const
     HTMLAttributes : array[ EHTMLAttributes ] of string = (
-          'size', 'value', 'href'
+          'size', 'value', 'href', 'type'
     );
 
     HTMLStyleAttributes : array[ EHTMLStyleAttributes ] of string = (
