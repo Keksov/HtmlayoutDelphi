@@ -91,6 +91,7 @@ protected
     function    getText() : string;
     procedure   setText( const aText : string );
     function    getHTML() : string; override;
+    procedure   setHTML( const aValue : string ); override;
     procedure   clear(); override;
 
 public
@@ -849,6 +850,14 @@ end;
 function THTMLTextShim.getHTML() : string;
 begin
     Result := getText();
+end;
+
+{*******************************************************************************
+* setHTML
+*******************************************************************************}
+procedure THTMLTextShim.setHTML( const aValue : string );
+begin
+    assert( false, 'Implement me!' );
 end;
 
 {*******************************************************************************

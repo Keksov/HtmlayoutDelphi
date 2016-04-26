@@ -3,7 +3,7 @@ object fmTestSVG: TfmTestSVG
   Top = 159
   Width = 958
   Height = 670
-  Caption = 'Mustache Example'
+  Caption = 'SVG Example'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

@@ -6,12 +6,14 @@ HTMLayout License terms could be found here http://www.terrainformatica.com/html
 Delphi binding of HTMLayout published under LGPL.
 Visit https://github.com/Keksov/HtmlayoutDelphi
   
-Delphi binding for HTMLayout
+Delphi (D7) binding for HTMLayout
 ============================
  
 Created with HTMLayout SDK v 3.3.3.13
 
-All functions from layout.h and layout_dom.h are imported. Several DOM object wrappers were introduced.
+All functions from htmlayout.h, htmlayout_dom.h, htmlite.h, htmprint.h, htmlayout_behavior.h are imported. Several DOM object wrappers were introduced.
+Some examples of Delphi code are located in test directory.
+
 Download SDK from official site http://www.terrainformatica.com/htmlayout/HTMLayoutSDK.zip
 For getting help on HTMLayout itself please visit forum at http://www.terrainformatica.com/forum/list.php?3 
 If you speak Russian then visit http://www.rsdn.ru/forum/htmlayout for getting even more help, especially these topics
@@ -44,8 +46,20 @@ http://www.terrainformatica.com/htmlayout/csss!.whtm
 http://www.terrainformatica.com/htmlayout/csss!-events.htm
 http://www.terrainformatica.com/htmlayout/csss!-dom-object.htm
 
-I'll not answer general questions about HTMLayout usage, but feel free to contact me concerning Delphi code.
-Please download HTMLayout SDK, run bin/browse.exe or bin64/win64.exe and take a look at the set of examples under the 'html_samples' subdir.
+* SVG
+Visit https://development.mwcs.de/svgimage.html for more info 
 
 Usage
 =====
+Please download HTMLayout SDK, run bin/browse.exe or bin64/win64.exe and take a look at the set of examples under the 'html_samples' subdir.
+
+Delphi
+ctrl := THtmlControl.Create( self );
+ctrl.Parent := panList;
+ctrl.Align  := alClient;
+ctrl.Visible := true;
+ctrl.html := '<html><body>Hello, World!</body></html>';
+
+Look at test\MustacheTemplateEngine.pas, test\TestSVG.pas, test\LiteTest.pas for more sophisticated examples.
+
+
